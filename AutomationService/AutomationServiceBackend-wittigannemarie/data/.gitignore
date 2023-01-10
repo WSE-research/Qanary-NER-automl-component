@@ -1,0 +1,6 @@
+# you can skip this first one if it is not already excluded by prior patterns
+!stardog/
+
+stardog/*
+!stardog/qanary/
+!stardog/README.adoc

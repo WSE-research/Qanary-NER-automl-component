@@ -1,0 +1,5 @@
+{
+    "entities": ["First_Name", "Middle_Name", "Last_Name"],
+    "language": "de",
+    "modeltype": "spacy"
+}

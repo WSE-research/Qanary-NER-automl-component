@@ -1,0 +1,1 @@
+These documentations refer to the beginning of this project but are still valid in understanding the basic structure behind the service concerning the learning process of the retrain endpoint.

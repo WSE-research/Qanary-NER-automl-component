@@ -1,0 +1,43 @@
+{
+    "trainingdata": [
+        {
+            "text": "Hi! You can call me Mary Tatiana Reinbert.",
+            "language": "en",
+            "entities": {
+                "First_Name": "Mary",
+                "Middle_Name": "Tatiana",
+                "Last_Name": "Reinbert"
+            }
+        },
+        {
+            "text": "My name is Johnathan.",
+            "language": "en",
+            "entities": {
+                "First_Name": "Johnathan"
+            }
+        },
+        {
+            "text": "Oh I actually go by David Jr Thomas.",
+            "language": "en",
+            "entities": {
+                "First_Name": "David Jr",
+                "Middle_Name": "Thomas"
+            }
+        },
+        {
+            "text": "I am not sure as to when Emily Ivashkov has their birthday?",
+            "language": "en",
+            "entities": {
+                "First_Name": "Emily",
+                "Last_Name": "Ivashkov"
+            }
+        },
+        {
+            "text": "Do you think Emilia will come?",
+            "language": "en",
+            "entities": {
+                "First_Name": "Emilia"
+            }
+        }
+    ]
+}

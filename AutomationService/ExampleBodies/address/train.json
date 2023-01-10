@@ -1,0 +1,49 @@
+{
+    "trainingdata": [
+        {
+            "text": "My mailing address is Bernburger straße 55, 06366, Koethen.",
+            "language": "en",
+            "entities": {
+                "Street" : "Bernburger straße",
+                "House_Nr": "55",
+                "Post_Code": "06366",
+                "City": "Koethen"
+            }
+        },
+        {
+            "text": "I live in Motzstr. 44",
+            "language": "en",
+            "entities": {
+                "Street" : "Motzstr",
+                "House_Nr": "44"
+            }
+        },
+        {
+            "text": "I recently moved to Nünchritz into the Paderborner Strasse.",
+            "language": "en",
+            "entities": {
+                "Street" : "Paderborner Strasse",
+                "City": "Nünchritz"
+            }
+        },
+        {
+            "text": "Currently, my residence is Toledo, 4390 Cedarstone Drive",
+            "language": "en",
+            "entities": {
+                "Street" : "Cedarstone Drive",
+                "House_Nr": "4390",
+                "City": "Toledo"
+            }
+        },
+        {
+            "text": "My address is Eschenweg 35, 17213 Adamshoffnung",
+            "language": "en",
+            "entities": {
+                "Street" : "Eschenweg",
+                "House_Nr": "35",
+                "Post_Code": "17213",
+                "City": "Adamshoffnung"
+            }
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is generating a README in Markdown.
+on: [push]
+jobs:
+  Generate-Readme:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: sudo apt-get install asciidoc pandoc 
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: asciidoc -b docbook README.adoc
+      - run: cat ./README.xml
+      - run: pandoc -f docbook -t markdown_strict ./README.xml -o ./READMEmd.md
+      - name: Store new READMEmd.md
+        uses: actions/upload-artifact@v3
+        with:
+          name: upload-markdown
+          path: |
+            ./READMEmd.md
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+            commit_message: New README
+      - run: echo "🍏 This job's status is ${{ job.status }}."
