@@ -4,7 +4,7 @@ services:
       container_name: "automation_server"
       restart: unless-stopped
       build: 
-        context: AutomationServiceBackend-wittigannemarie
+        context: AutomationServiceBackend
         dockerfile: DockerfileStandalone
         args:
           TRAININGDATA: ${TRAININGDATA}
@@ -12,7 +12,7 @@ services:
           MODELTYPE: ${MODELTYPE} 
           LANGUAGE: ${MODELLANGUAGE}
       volumes:
-        - "./AutomationServiceBackend-wittigannemarie:/app"
+        - "./AutomationServiceBackend:/app"
       ports: 
         - "8002:8002"
     #Remove these if your service has no GPU; adjust if you use a different driver
