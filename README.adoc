@@ -34,7 +34,7 @@ There are two options (requirements) for starting the service:
 
 === Option 1 
 
-If a pre-trained model is intended to be provided, it must be available in the folder link:./AutomationService/AutomationServiceBackend-wittigannemarie/data/model[AutomationService/AutomationServiceBackend-wittigannemarie/data/model] (default configuration).
+If a pre-trained model is intended to be provided, it must be available in the folder link:./AutomationService/AutomationServiceBackend/data/model[AutomationService/AutomationServiceBackend/data/model] (default configuration).
 The service works only with https://spacy.io[spaCy] models. 
 Hence, your model needs to follow the spaCy standards (or should be trained using spaCy). 
 In a netconsole, just copy the contents of a trained model (usually in the folder `model-best` or `model-last`) into the mentioned folder.
@@ -43,7 +43,7 @@ In a netconsole, just copy the contents of a trained model (usually in the folde
 
 If no pre-trained model is provided, training and testing data must be provided to the system. 
 Otherwise, the web service will not start.
-Both files must be provided in the folder link:./AutomationService/AutomationServiceBackend-wittigannemarie/data/trainingdata[AutomationService/AutomationServiceBackend-wittigannemarie/data/trainingdata].
+Both files must be provided in the folder link:./AutomationService/AutomationServiceBackend/data/trainingdata[AutomationService/AutomationServiceBackend/data/trainingdata].
 Additionally, the file names must be defined in the link:./AutomationService/.env[.env] file.  
 Both datasets must always be in CSV file format and meet the following requirements:
 
@@ -173,7 +173,7 @@ To connect the service to an existing Qanary pipeline, the following steps must 
 
 To connect the service with an already existing ML Flow Logger, the following steps must be taken: 
 
-* In the link:./AutomationService/AutomationServiceBackend-wittigannemarie/app/.env[.env] file of the component, the following values have to be adjusted:
+* In the link:./AutomationService/AutomationServiceBackend/app/.env[.env] file of the component, the following values have to be adjusted:
 ** `MLFLOW_URI`
     
 * In the same file, if SFTP is used, the following values have to be adjusted:
