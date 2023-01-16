@@ -14,7 +14,7 @@ services:
 
   mlflow:
     build:
-      context: AutomationServiceBackend-wittigannemarie/MLFlow
+      context: AutomationServiceBackend/MLFlow
       args:
         MLFLOW_PORT_ARTIFACT: $MLFLOW_PORT_ARTIFACT
         MLFLOW_USERNAME: $MLFLOW_USERNAME
@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
     image: automation-component-container
     build:
-      context: AutomationServiceBackend-wittigannemarie
+      context: AutomationServiceBackend
       dockerfile: DockerfileQanary
       args:
         TRAININGDATA: ${TRAININGDATA}
@@ -56,7 +56,7 @@ services:
       - PRODUCTION=True
     command: uvicorn qanarycomponent:app --host 0.0.0.0 --port=8081
     volumes:
-      - "./AutomationServiceBackend-wittigannemarie:/app"
+      - "./AutomationServiceBackend:/app"
     #Remove these if your service has no GPU; adjust if you use a different driver
     deploy:
       resources:

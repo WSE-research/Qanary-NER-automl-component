@@ -191,7 +191,9 @@ async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] =
     mentioned files within one. If correctly structured, the data is used to retrain a new model and overwrite
     the existing one. Optionally, you can allow MLFlow if you set use_ml_logger to True.
     """
-    if use_ml_logger.lower() in ('true', '1', 't'):
+    use_ml_logger = use_ml_logger.lower() in ('true', '1', 't')
+    if use_ml_logger:
+        print("deepcopy")
         log_traindata = deepcopy(trainingdata)
         log_testdata = deepcopy(testingdata)
         log_options = deepcopy(options)
@@ -199,14 +201,15 @@ async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] =
     response = await handle_post_retrain_call(req, trainer, interface, trainingdata, testingdata, options)
 
     if use_ml_logger:
+        print("retrain")
         await handle_retrain_logging(trainer, interface, log_traindata, log_testdata, log_options)
+        close_file(log_traindata)
+        close_file(log_testdata)
+        close_file(log_options)
 
     close_file(trainingdata)
     close_file(testingdata)
     close_file(options)
-    close_file(log_traindata)
-    close_file(log_testdata)
-    close_file(log_options)
 
     return response
 
