@@ -15,9 +15,15 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - run: asciidoc -b docbook README.adoc
-      - run: cat ./README.xml
-      - run: pandoc -f docbook -t markdown_strict ./README.xml -o ./READMEmd.md
+      - name: Remove unwanted characters
+        run: |
+          sed -i "s/\[.lead\]/ /g" ./README.adoc 
+          sed -i "s/>/ /g" ./README.adoc 
+      - name: Start ASCIIDOC conversion
+        run: | 
+          asciidoc -b docbook README.adoc
+          cat ./README.xml
+          pandoc -f docbook -t markdown_strict ./README.xml -o ./READMEmd.md
       - name: Store new READMEmd.md
         uses: actions/upload-artifact@v3
         with:

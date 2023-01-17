@@ -16,6 +16,8 @@ endif::[]
 
 = Automation Service
 
+[.lead]
+
 The Automation Service offers the possibility to have an automatically generated model based on its given data and endpoints to interact with it.
 In this file, the examples given will follow a NER concerning names, s.t., it tries to identify _Firstnames_, _Middle names_, and _Lastnames_.
 However, you may define any entities to recognize that you want.
