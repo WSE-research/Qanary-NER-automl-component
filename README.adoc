@@ -86,11 +86,13 @@ An example for an link:./AutomationService/ExampleBodies/name[exemplary CSV-form
 
 Training and testing data must follow the same basic structure (i.e., they must have the same column name).
 
+There are two example environments files given for initial training with link:./.env.template-name-training[name] or link:./.env.template-address-training[address] data.
+
 == Starting the Service
 
 To start the service, docker-compose files are provided. 
-Therefore, you need to have Docker and Docker-Compose installed. 
-Additionally, if you want to use a GPU to train the models, you might need additional requirements based on your drivers / hardware. 
+Therefore, you need to have docker and docker-compose installed. 
+Additionally, if you want to use a GPU to train the models, you might need additional requirements based on your drivers / hardware, if not you need to remove the lines from the docker-compose. 
 Refer to the documentation needed for these. 
 Nothing else is needed. 
 
