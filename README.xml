@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+
+<article lang="en">
+<articleinfo>
+    <title>Automation Service</title>
+</articleinfo>
+<simpara>The Automation Service offers the possibility to have an automatically generated model based on its given data and endpoints to interact with it.
+In this file, the examples given will follow a NER concerning names, s.t., it tries to identify <emphasis>Firstnames</emphasis>, <emphasis>Middle names</emphasis>, and <emphasis>Lastnames</emphasis>.
+However, you may define any entities to recognize that you want.
+A demo of the service can be accessed at <ulink url="http://demos.swe.htwk-leipzig.de">http://demos.swe.htwk-leipzig.de</ulink>.</simpara>
+<simpara>The service can be run as standalone or within a <ulink url="https://github.com/WDAqua/Qanary">Qanary-driven Question Answering system</ulink>.</simpara>
+<section id="_starting_conditions">
+<title>Starting Conditions</title>
+<simpara>There are two options (requirements) for starting the service:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+option 1: a pre-trained model, or
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+option 2: there must be either compatible datasets for training and testing.
+</simpara>
+</listitem>
+</itemizedlist>
+<section id="_option_1">
+<title>Option 1</title>
+<simpara>If a pre-trained model is intended to be provided, it must be available in the folder <ulink url="./AutomationService/AutomationServiceBackend/data/model">AutomationService/AutomationServiceBackend/data/model</ulink> (default configuration).
+The service works only with <ulink url="https://spacy.io">spaCy</ulink> models.
+Hence, your model needs to follow the spaCy standards (or should be trained using spaCy).
+In a netconsole, just copy the contents of a trained model (usually in the folder <literal>model-best</literal> or <literal>model-last</literal>) into the mentioned folder.</simpara>
+</section>
+<section id="_option_2">
+<title>Option 2</title>
+<simpara>If no pre-trained model is provided, training and testing data must be provided to the system.
+Otherwise, the web service will not start.
+Both files must be provided in the folder <ulink url="./AutomationService/AutomationServiceBackend/data/trainingdata">AutomationService/AutomationServiceBackend/data/trainingdata</ulink>.
+Additionally, the file names must be defined in the <ulink url="./AutomationService/.env">.env</ulink> file.
+Both datasets must always be in CSV file format and meet the following requirements:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Each file contains columns for the input-text (first column) and each entity the model should be able to identify.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Then, each data-text is written into the text-column and additionally, the values for each entity inside the text are defined separately in the respective column.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+If a text does not contain a value for a defined entity, the corresponding cell must be empty.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>An example for an <ulink url="./AutomationService/ExampleBodies/name">exemplary CSV-formatted dataset for recognizing names of people</ulink> would be something like this:</simpara>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="25*"/>
+<colspec colname="col_2" colwidth="25*"/>
+<colspec colname="col_3" colwidth="25*"/>
+<colspec colname="col_4" colwidth="25*"/>
+<thead>
+<row>
+<entry align="left" valign="top">Name</entry>
+<entry align="left" valign="top">First_Name</entry>
+<entry align="left" valign="top">Middle_Name</entry>
+<entry align="left" valign="top">Last_Name</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>I am Ms Walters</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Walters</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Do you think Silke will come?</simpara></entry>
+<entry align="left" valign="top"><simpara>Silke</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>startquestionansweringwithtextquestion</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>I do have a middlename, it&#8217;s Heinz-Wilhelm</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Heinz-Wilhelm</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>You can send the data to Ingetraut Renz</simpara></entry>
+<entry align="left" valign="top"><simpara>Ingetraut</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Renz</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>Training and testing data must follow the same basic structure (i.e., they must have the same column name).</simpara>
+</section>
+</section>
+<section id="_starting_the_service">
+<title>Starting the Service</title>
+<simpara>To start the service, docker-compose files are provided.
+Therefore, you need to have Docker and Docker-Compose installed.
+Additionally, if you want to use a GPU to train the models, you might need additional requirements based on your drivers / hardware.
+Refer to the documentation needed for these.
+Nothing else is needed.</simpara>
+<section id="_starting_as_a_standalone_service">
+<title>Starting as a standalone Service</title>
+<simpara>If you want to run the service as a standalone, in the root directory build the images.
+Please note that if the service runs as a standalone, it will be running on the port <emphasis>8002</emphasis> per default as opposed to 8080 and 8081.</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_Standalone.yml build</programlisting>
+<simpara>You can then run the service via:</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_Standalone.yml up</programlisting>
+<simpara>Add <literal>-d</literal> to the call to have it run in the background and not be bound by the running console.</simpara>
+</section>
+<section id="_starting_a_qanary_environment">
+<title>Starting a Qanary Environment</title>
+<section id="_starting_a_complete_qanary_environment">
+<title>Starting a complete Qanary environment</title>
+<simpara>If you want to run the service as a Qanary component, in the root directory build the images for it.
+The setup in the docker-compose automatically creates a Qanary instance as well as a Stardog server to interact with.</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_QanaryComponent.yml build</programlisting>
+<simpara>You can then run it via:</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_QanaryComponent.yml up</programlisting>
+<simpara>Add <literal>-d</literal> to the call to have it run in the background and not be bound by the running console.</simpara>
+<simpara>Using the file <literal>docker-compose-full-example.yml</literal> will connect the pipeline automatically to the HTWK Stardog server.</simpara>
+</section>
+<section id="_how_to_start_the_service_and_connect_it_to_an_existing_qanary_question_answering_system">
+<title>How to start the service and connect it to an existing Qanary Question Answering System</title>
+<simpara>If you already have a Qanary pipeline, you might just want to add the component to it.
+In this case, you can build and start only the required component.
+To do this, the following commaned is used:</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_QanaryComponent.yml build automation_component</programlisting>
+<simpara>You can then run it via:</simpara>
+<programlisting language="console" linenumbering="unnumbered">docker-compose -f docker-compose_QanaryComponent.yml up automation_component</programlisting>
+<simpara>Add <literal>-d</literal> to the call to have it run in the background and not be bound by the running console.</simpara>
+<simpara>However, in that case additional configurations are needed to be done.
+To connect the service to an existing Qanary pipeline, the following steps must be taken:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+In the highest <ulink url="./AutomationService/.env">.env</ulink> file, the following values have to be adjusted:
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>SPRING_BOOT_ADMIN_URL</literal>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>SPRING_BOOT_ADMIN_USERNAME</literal>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>SPRING_BOOT_ADMIN_PASSWORD</literal>
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+In the same file, the component connection settings have to be adjusted:
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>SERVICE_HOST</literal>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>SERVICE_PORT</literal>
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+You can also find the component name and description in this file
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>To connect the service with an already existing ML Flow Logger, the following steps must be taken:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+In the <ulink url="./AutomationService/AutomationServiceBackend/app/.env">.env</ulink> file of the component, the following values have to be adjusted:
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>MLFLOW_URI</literal>
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+In the same file, if SFTP is used, the following values have to be adjusted:
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>USE_SFTP = True</literal>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>MLFLOW_HOST</literal>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>MLFLOW_PORT</literal>
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+In the highest <ulink url="./AutomationService/.env">.env</ulink> file, the ML FLOW Logger values are only relevant for the complete system and do not need to be paid attention to for the standalone component
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+<section id="_possible_errors">
+<title>Possible errors</title>
+<section id="_literal_additional_properties_are_not_allowed_devices_was_unexpected_literal">
+<title><literal>Additional properties are not allowed ('devices' was unexpected)</literal></title>
+<simpara>The full error message might look like this:</simpara>
+<literallayout class="monospaced">ERROR: The Compose file './docker-compose_QanaryComponent.yml' is invalid because: services.automation_component.deploy.resources.reservations value Additional properties are not allowed ('devices' was unexpected)</literallayout>
+<simpara>Reason: The prepared docker-compose file is integrating GPU capabilities.
+Following the <ulink url="https://docs.docker.com/compose/gpu-support/#enabling-gpu-access-to-service-containers">Docker documentation</ulink>, to take advantage of this functionality you need at least docker-compose version v1.28.0+ (check by running the command: <literal>docker-compose --version</literal>).</simpara>
+<simpara>You might install the most recent version using pip:</simpara>
+<programlisting language="console" linenumbering="unnumbered">pip install docker-compose --upgrade</programlisting>
+</section>
+<section id="_literal_parameters_not_supported_in_api_versions_lt_x_literal">
+<title><literal>Parameters not supported in API versions &lt; X</literal></title>
+<simpara>The full error message might look like this:</simpara>
+<literallayout class="monospaced">ERROR: for automation_component  device_requests param is not supported in API versions &lt; 1.40</literallayout>
+<simpara>Reason: the docker-compose version used is too outdated.
+In building this service, the lowest used version was <literal>2.12.2</literal> which worked fine.
+IF the error occurs, you might install the newest docker-compose version using your preferred installation method.</simpara>
+<simpara>On Arch Linux, the call to install / update docker compose would be:</simpara>
+<programlisting language="console" linenumbering="unnumbered">sudo pacman -S docker-compose</programlisting>
+<simpara>For Ubuntu and Debain you can run:</simpara>
+<programlisting language="console" linenumbering="unnumbered">sudo apt-get install docker-compose-plugin</programlisting>
+</section>
+</section>
+</section>
+<section id="_interaction_with_the_service">
+<title>Interaction with the Service</title>
+<simpara>Once a Qanary service is started, you may interact with it through a handful of endpoints offered as APIs that will either provide access to some way of information extraction from the given data or enable you to retrain (i.e., exchange) the model on runtime.</simpara>
+<section id="_qanary_endpoint">
+<title>Qanary endpoint</title>
+<simpara>To interact with the Qanary interface, you can access it using the following webpage:</simpara>
+<programlisting language="URL" linenumbering="unnumbered">http://demos.swe.htwk-leipzig.de:40111/startquestionansweringwithtextquestion</programlisting>
+<simpara>It allows you to ask questions and the recognized entities will be saved in the Stardog server. The page also allows you to interact with Stardog.</simpara>
+<simpara>If you enter a question such as "My name is Annemarie Wittig." with the default model, there will be two annotations created, one for the first- and one for the last name. The generated query will be something like this:</simpara>
+<screen>PREFIX dbr: &lt;http://dbpedia.org/resource/
+PREFIX dbo: &lt;http://dbpedia.org/ontology/
+PREFIX qa: &lt;http://www.wdaqua.eu/qa#
+PREFIX oa: &lt;http://www.w3.org/ns/openannotation/core/
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#
+PREFIX xsd: &lt;http://www.w3.org/2001/XMLSchema#
+INSERT {
+GRAPH &lt;urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65  {
+    ?entityAnnotation0 a qa:AnnotationOfInstance .
+    ?entityAnnotation0 oa:hasTarget [
+        a   oa:SpecificResource;
+            oa:hasSource    &lt;http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1  ;
+            oa:hasSelector  [
+                a oa:TextPositionSelector ;
+                oa:start "11"^^xsd:nonNegativeInteger ;
+                oa:end  "20"^^xsd:nonNegativeInteger
+            ]
+        ] .
+    ?entityAnnotation0 oa:hasBody "FIRST_NAME"^^xsd:string ;
+        oa:annotatedBy &lt;urn:qanary:AutomationServiceComponent  ;
+        oa:annotatedAt ?time ;
+        qa:score "0.5"^^xsd:decimal .
+
+    ?entityAnnotation1 a qa:AnnotationOfInstance .
+    ?entityAnnotation1 oa:hasTarget [
+        a   oa:SpecificResource;
+            oa:hasSource    &lt;http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1  ;
+            oa:hasSelector  [
+                a oa:TextPositionSelector ;
+                oa:start "21"^^xsd:nonNegativeInteger ;
+                oa:end  "27"^^xsd:nonNegativeInteger
+            ]
+        ] .
+    ?entityAnnotation1 oa:hasBody "MIDDLE_NAME"^^xsd:string ;
+        oa:annotatedBy &lt;urn:qanary:AutomationServiceComponent  ;
+        oa:annotatedAt ?time ;
+        qa:score "0.5"^^xsd:decimal .
+    }
+}
+WHERE {
+    BIND (IRI(str(RAND())) AS ?entityAnnotation0) .
+    BIND (IRI(str(RAND())) AS ?entityAnnotation1) .
+    BIND (now() as ?time)
+}</screen>
+<simpara>Querying data from the Qanary triplestore with a query like the following, will return the NER parts of the annotation:</simpara>
+<screen>PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#
+PREFIX oa: &lt;http://www.w3.org/ns/openannotation/core/
+PREFIX qa: &lt;http://www.wdaqua.eu/qa#
+SELECT *
+FROM &lt;urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65
+WHERE {
+    ?annotationId rdf:type ?type.
+    ?annotationId oa:hasBody ?body.
+    ?annotationId oa:hasTarget ?target.
+    ?target oa:hasSelector ?selector .
+    ?selector oa:start ?start .
+    ?selector oa:end ?end .
+}</screen>
+<simpara>The result then looks like this:</simpara>
+<informalfigure>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="https://user-images.githubusercontent.com/59013332/197013196-6cce4c8b-07d9-4426-aaa7-53fe753905c6.png"/>
+  </imageobject>
+  <textobject><phrase>Example Result</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>Alternatively, you can curl against the pipeline directly using a curl command such as:</simpara>
+<programlisting language="CURL" linenumbering="unnumbered">curl --location --request POST 'http://http://demos.swe.htwk-leipzig.de:8081/questionanswering?textquestion=Who is Barack Obama?&amp;language=en&amp;componentlist%5B%5D=AutomationServiceComponent'</programlisting>
+</section>
+<section id="_ner_endpoint">
+<title>NER Endpoint</title>
+<section id="_api">
+<title>/api</title>
+<simpara>The /api endpoint offers two interfaces for interaction.</simpara>
+<section id="_get">
+<title>GET</title>
+<simpara>The GET interface offers the possibility to retrieve the NER of a single text by your model.
+This is only an endpoint for quick result checks and does not allow mlflow logging.
+You can interact with it by using a call like:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X 'GET' 'http://demos.swe.htwk-leipzig.de:8081/api?text=TEXT'</programlisting>
+<simpara>Remember to replace spaces with <emphasis>%</emphasis>.
+The result will be the original text, recognized entities with their labels and content:</simpara>
+<programlisting language="json" linenumbering="unnumbered">{
+    "text": "text",
+    "Entity-Label1": "value1",
+    "Entity-Label2": "value2"
+}</programlisting>
+</section>
+<section id="_post">
+<title>POST</title>
+<simpara>The POST interface offers a NER for multiple input possibilities:</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+upload a CSV file,
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+upload a JSON file, or
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+upload raw JSON data within the body of your request.
+</simpara>
+</listitem>
+</orderedlist>
+<simpara>In all cases the matching <ulink url="https://developer.mozilla.org/docs/Web/HTTP/Headers/Accept">"accept"-header</ulink> must be set within the HTTP request.
+It will define whether the output is of the type <literal>application/json</literal> or <literal>text/csv</literal>.
+If another or an invalid "accept"-header is given, the service will either use the <ulink url="https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Type">"Content-Type"-header</ulink> of the uploaded file or, if no file was uploaded, it will use it from the request.
+If none of these are valid, the request will fail.
+Hence, if you consider problems, then add or check the headers that are defined in your Web service request.</simpara>
+<simpara>You can also send the parameter <literal>use_ml_logger</literal> with the value <literal>True</literal> with these request to activate logging using mlflow.
+This is <emphasis>recommended</emphasis> while using the component in a real Question Answering system to establish a tracking of the component&#8217;s behavior (i.e., the quality).</simpara>
+<simpara>====== CSV Upload</simpara>
+<simpara>You can upload a CSV file, containing texts that are supposed to be run through NER in the first column, to the Web service.
+There can be any other columns added if required.
+For example, the expected entities could be added to compare expected and actual results.
+The service will then annotate the CSV file with columns for all its recognizable entities and fill these up with the entities contained in each row.
+The <literal>curl</literal> command would be:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR CSV FILE PATH};type=text/csv" http://demos.swe.htwk-leipzig.de:8081/api</programlisting>
+<simpara>The service will answer with the annotated CSV file.
+Additionally, the response file will also be saved locally in the container in the folder <literal>/code/app/spacy_model/intermediate/results/</literal>.</simpara>
+<simpara>As an example, if you want to upload a file such as:</simpara>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="50*"/>
+<colspec colname="col_2" colwidth="16*"/>
+<colspec colname="col_3" colwidth="16*"/>
+<colspec colname="col_4" colwidth="16*"/>
+<thead>
+<row>
+<entry align="left" valign="top">Text</entry>
+<entry align="left" valign="top">First_Name</entry>
+<entry align="left" valign="top">Middle_Name</entry>
+<entry align="left" valign="top">Last_Name</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>People call me Ida Clayton Henderson</simpara></entry>
+<entry align="left" valign="top"><simpara>Ida</simpara></entry>
+<entry align="left" valign="top"><simpara>Clayton</simpara></entry>
+<entry align="left" valign="top"><simpara>Henderson</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>I am happy to meet you, too. You can call me Kira.</simpara></entry>
+<entry align="left" valign="top"><simpara>Kira</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>You can send the data to Eberhard Rump</simpara></entry>
+<entry align="left" valign="top"><simpara>Eberhard</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Rump</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Please send all business inquiries to Jessie Edwin Fowler</simpara></entry>
+<entry align="left" valign="top"><simpara>Jessie</simpara></entry>
+<entry align="left" valign="top"><simpara>Edwin</simpara></entry>
+<entry align="left" valign="top"><simpara>Fowler</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Oh, I actually go by Lioba Alexandra.</simpara></entry>
+<entry align="left" valign="top"><simpara>Lioba</simpara></entry>
+<entry align="left" valign="top"><simpara>Alexandra</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>with <literal>text/csv</literal> as an "accept"-header, it would result in something like:</simpara>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="7">
+<colspec colname="col_1" colwidth="33*"/>
+<colspec colname="col_2" colwidth="11*"/>
+<colspec colname="col_3" colwidth="11*"/>
+<colspec colname="col_4" colwidth="11*"/>
+<colspec colname="col_5" colwidth="11*"/>
+<colspec colname="col_6" colwidth="11*"/>
+<colspec colname="col_7" colwidth="11*"/>
+<thead>
+<row>
+<entry align="left" valign="top">Text </entry>
+<entry align="left" valign="top">First_Name </entry>
+<entry align="left" valign="top"> Middle_Name</entry>
+<entry align="left" valign="top"> Last_Name</entry>
+<entry align="left" valign="top"> FIRST_NAME</entry>
+<entry align="left" valign="top"> LAST_NAME</entry>
+<entry align="left" valign="top"> MIDDLE_NAME</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>People call me Ida Clayton Henderson</simpara></entry>
+<entry align="left" valign="top"><simpara>Ida</simpara></entry>
+<entry align="left" valign="top"><simpara>Clayton</simpara></entry>
+<entry align="left" valign="top"><simpara>Henderson</simpara></entry>
+<entry align="left" valign="top"><simpara>Ida</simpara></entry>
+<entry align="left" valign="top"><simpara>Henderson</simpara></entry>
+<entry align="left" valign="top"><simpara>Clayton</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>I am happy to meet you, too. You can call me Kira.</simpara></entry>
+<entry align="left" valign="top"><simpara>Kira</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Kira</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>You can send the data to Eberhard Rump</simpara></entry>
+<entry align="left" valign="top"><simpara>Eberhard</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Rump</simpara></entry>
+<entry align="left" valign="top"><simpara>Eberhard</simpara></entry>
+<entry align="left" valign="top"><simpara>Rump</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Please send all business inquiries to Jessie Edwin Fowler</simpara></entry>
+<entry align="left" valign="top"><simpara>Jessie</simpara></entry>
+<entry align="left" valign="top"><simpara>Edwin</simpara></entry>
+<entry align="left" valign="top"><simpara>Fowler</simpara></entry>
+<entry align="left" valign="top"><simpara>Jessie</simpara></entry>
+<entry align="left" valign="top"><simpara>Fowler</simpara></entry>
+<entry align="left" valign="top"><simpara>Edwin</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Oh, I actually go by Lioba Alexandra.</simpara></entry>
+<entry align="left" valign="top"><simpara>Lioba</simpara></entry>
+<entry align="left" valign="top"><simpara>Alexandra</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Lioba</simpara></entry>
+<entry align="left" valign="top"><simpara></simpara></entry>
+<entry align="left" valign="top"><simpara>Alexandra</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>However, having defined the <literal>accept</literal>-header as <literal>application/json</literal>.
+The response of the Web service would be:</simpara>
+<programlisting language="json" linenumbering="unnumbered">[
+    {
+        "Text": "People call me Ida Clayton Henderson",
+        "First_Name": "Ida",
+        "Middle_Name": "Clayton",
+        "Last_Name": "Henderson",
+        "FIRST_NAME": "Ida",
+        "LAST_NAME": "Henderson",
+        "MIDDLE_NAME": "Clayton"
+    },
+    {
+        "Text": "I am happy to meet you, too. You can call me Kira.",
+        "First_Name": "Kira",
+        "Middle_Name": null,
+        "Last_Name": "         ",
+        "FIRST_NAME": "Kira",
+        "LAST_NAME": "",
+        "MIDDLE_NAME": ""
+    },
+    ...
+]</programlisting>
+<simpara>====== JSON File Upload</simpara>
+<simpara>Additionally, the endpoint allows applying NER to all texts given in a JSON file much like the <link linkend="csv-upload">CSV Upload</link>.
+The JSON file must follow this structure:</simpara>
+<programlisting language="json" linenumbering="unnumbered">[
+    {
+        "text": "{TEXT TO CLASSIFY}",
+        "language": "{LANGUAGE}",
+        "entities": {
+            "{ENTITY1}": "{VALUE1}",
+            "{ENTITY2}": "{VALUE2}",
+            ...
+        }
+    }
+]</programlisting>
+<simpara>However, both the language and the entity tags can be left out (they default to null), if wanted.
+The NER via uploading a JSON file, much like the CSV file upload, allows the freedom to add any additional information that is wanted, as long as each object has the "attribute text".
+Hence, request data of sending two element might look like:</simpara>
+<programlisting language="json" linenumbering="unnumbered">[
+    {
+        "text": "{TEXT TO CLASSIFY}"
+    },
+    {
+        "text": "{TEXT TO CLASSIFY}"
+    }
+]</programlisting>
+<simpara>Example files to upload are the texts.json files found in the folder <ulink url="./AutomationService/ExampleBodies/name">./AutomationService/ExampleBodies/name</ulink> and <ulink url="./AutomationService/ExampleBodies/address">./AutomationService/ExampleBodies/address</ulink> directories.</simpara>
+<simpara>A corresponding <literal>curl</literal> call would be:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR JSON FILE PATH};type=application/json" http://demos.swe.htwk-leipzig.de:8081/api</programlisting>
+<simpara>The response will be the annotated JSON, but it will also be stored locally in the container.
+It can be found as <literal>/code/app/spacy_model/intermediate/results/</literal>.
+The NER results can be found in the <literal>results</literal> array.
+An example response object looks like this:</simpara>
+<programlisting language="json" linenumbering="unnumbered">[
+    {
+        "text": "I am called Marilyn Monroe.",
+        "language": "en",
+        "entities": [
+            {
+                "First_Name": "Marilyn",
+                "Last_Name": "Monroe"
+            }
+        ],
+        "results": [
+            {
+                "FIRST_NAME": "Marilyn",
+                "LAST_NAME": "Monroe"
+            }
+        ]
+    }
+]</programlisting>
+<simpara>If this was entered with <literal>text/csv</literal> as <literal>accept</literal>-header, the result would be:</simpara>
+<informaltable
+frame="all"
+rowsep="1" colsep="1"
+>
+<tgroup cols="6">
+<colspec colname="col_1" colwidth="37*"/>
+<colspec colname="col_2" colwidth="12*"/>
+<colspec colname="col_3" colwidth="12*"/>
+<colspec colname="col_4" colwidth="12*"/>
+<colspec colname="col_5" colwidth="12*"/>
+<colspec colname="col_6" colwidth="12*"/>
+<thead>
+<row>
+<entry align="left" valign="top">text </entry>
+<entry align="left" valign="top">language </entry>
+<entry align="left" valign="top">entities_First_Name </entry>
+<entry align="left" valign="top">entities_Last_Name </entry>
+<entry align="left" valign="top">results_FIRST_NAME </entry>
+<entry align="left" valign="top">results_LAST_NAME</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>I am called Marilyn Monroe.</simpara></entry>
+<entry align="left" valign="top"><simpara>en</simpara></entry>
+<entry align="left" valign="top"><simpara>Marilyn</simpara></entry>
+<entry align="left" valign="top"><simpara>Monroe</simpara></entry>
+<entry align="left" valign="top"><simpara>Marilyn</simpara></entry>
+<entry align="left" valign="top"><simpara>Monroe</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>====== Raw JSON Upload</simpara>
+<simpara>The direct upload works exactly as the <link linkend="json-file-upload">JSON File Upload</link> with the difference, that the request body is not a file but the JSON data as a string.
+It has the same structure and response as in the JSON File Upload and all additional information can be referenced there.
+The only difference is the <literal>curl</literal> command, which will look something like this:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -H 'accept: application/json' -H "Content-Type: application/json" -d '{{YOUR JSON}}' http://demos.swe.htwk-leipzig.de:8081/api</programlisting>
+<simpara>Or an example of a <literal>curl</literal> with content:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X 'POST' \
+  'http://demos.swe.htwk-leipzig.de:8081/api' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '[
+  {
+    "text": "I am called Marilyn Monroe.",
+    "language": "en",
+    "entities": {
+      "First_Name": "Marilyn",
+      "Last_Name": "Monroe"
+    }
+  }
+]'</programlisting>
+<simpara>Alternatively, the <literal>accept</literal>-header can be set to CSV, too.</simpara>
+</section>
+</section>
+</section>
+<section id="_retrain_endpoint">
+<title>Retrain Endpoint</title>
+<simpara>The retraining endpoint uses the data you provided to train a new NER model which will if all is successful, replace the original model.
+All following interactions will then be with the new model.
+<emphasis role="strong">The original model will be deleted.</emphasis>
+"accept"-headers will not be relevant, as the only return value is a success message in JSON format.</simpara>
+<simpara>The retraining will, after formatting the input if needed, go through the <ulink url="https://github.com/AnnemarieWittig/RecognitionService/blob/main/Documentation/SpaCyTrainingProcess.md">data preparation</ulink> as it is described in the documentation, save the created intermediate files within the container and will then use the created docbins to train a new model.
+All of this happens in a folder located in the container as <literal>/code/app/spacy_model/intermediate/</literal>.
+Once the training concludes successfully, the files are moved into the system and overwrite other existing files, either of the original model or the original intermediate files.
+Both, the (formatted) training- and testingdata as well as the generated docbins will be saved in the container (until overwritten again).
+The used model will always be the <literal>model-best</literal> generated by SpaCy.</simpara>
+<simpara>After the training, you can find your files here:
+ * Trainingdata is saved as <literal>train.csv</literal> in <literal>/code/app/spacy_model/corpus/trainingdata/</literal>
+ * Testingdata is saved as <literal>test.csv</literal> in <literal>/code/app/spacy_model/corpus/trainingdata/</literal>
+ * The generated docbins are saved as <literal>train.spacy</literal> and <literal>test.spacy</literal> in <literal>/code/app/spacy_model/corpus/spacy-docbins/</literal>
+ * The model (only the contents of the model-best) will be found in <literal>/code/app/spacy_model/output/model-best/</literal></simpara>
+<simpara>Everything else such as the other trained model will be deleted.</simpara>
+<warning><simpara>Please note that the process of retraining can, and will, take some time to finish.
+The classification APIs can still be used with the original model while the training runs.</simpara></warning>
+<simpara>You can also send the parameter <literal>use_ml_logger</literal> with the value <literal>True</literal> with these request to activate logging using mlflow. This is recommended when you use Qanary.</simpara>
+<section id="_csv_upload">
+<title>CSV Upload</title>
+<simpara>The endpoint allows to upload two CSV files, the <literal>trainingdata</literal> and the <literal>testingdata</literal>, as CSV files.
+You can name them however you like, as long as the files have the exact structure as the ones needed in the <link linkend="starting-conditions">Starting Conditions</link>.</simpara>
+<simpara>The corresponding <literal>curl</literal> call would be:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA CSV};type=text/csv' -F 'testingdata=@{YOUR VALIDATION CSV};type=text/csv' http://demos.swe.htwk-leipzig.de:8081/retrain</programlisting>
+</section>
+<section id="_json_file_upload">
+<title>JSON File Upload</title>
+<simpara>The endpoint allows the upload of trainingfiles in JSON format.
+There are three files needed in total.
+The training data is structured like this:</simpara>
+<programlisting language="json" linenumbering="unnumbered">{
+    "trainingdata": [
+        {
+            "text": "{TRAININGTEXT}",
+            "language": "{LANGUAGETEXT (not relevant for training and can be ignored, language is set in the model config)}",
+            "entities": {
+                "{ENTITY1}": "{VALUE1}",
+                "{ENTITY2}": "{VALUE2}",
+                ...
+            }
+        }
+    ]
+}</programlisting>
+<simpara>The data for tests follows the same structure.
+But, inside the file, the initial key is named <literal>testingdata</literal> (instead of <literal>trainingsdata</literal>).</simpara>
+<simpara>For the JSON upload, a third file is needed.
+It is called options and contains a list of all possible <literal>entities</literal> the NER is supposed to recognize as well as the model <literal>language</literal> and <literal>modeltype</literal>.
+It has the following structure:</simpara>
+<programlisting language="json" linenumbering="unnumbered">{
+    "entities": ["{ENTITY1}", "{ENTITY2}", ...],
+    "language": "en",
+    "modeltype": "spacy"
+}</programlisting>
+<simpara>Example files for <literal>curl</literal> commands can be found in the <ulink url="./AutomationService/ExampleBodies/name">ExampleBodies/name</ulink> and <ulink url="./AutomationService/ExampleBodies/address">ExampleBodies/address</ulink> directories.</simpara>
+<simpara>Warning: Please note that those are minimal examples and will not generate a well-working NER model.</simpara>
+<simpara>The following <literal>curl</literal> command would start the retraining of the component&#8217;s model:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA JSON};type=application/json' -F 'testingdata=@{YOUR VALIDATION JSON};type=application/json' -F 'options=@{YOUR OPTIONS JSON};type=application/json' http://demos.swe.htwk-leipzig.de:8081/retrain</programlisting>
+</section>
+<section id="_json_raw_upload">
+<title>JSON Raw Upload</title>
+<simpara>The <literal>json/upload-direct</literal> endpoint allows the data needed to be retrained raw within the body of the request.
+The data itself is structured as is for the <link linkend="json-file-upload-1">JSON File Upload</link>, but all put in one file like the following:</simpara>
+<programlisting language="json" linenumbering="unnumbered">{
+    "trainingdata": [
+        {
+            "text": "{TRAININGTEXT}",
+            "language": "{LANGUAGETEXT (not relevant for training and can be ignored, language is set in the model config)}",
+            "entities": {
+                "{ENTITY1}": "{VALUE1}",
+                "{ENTITY2}": "{VALUE2}",
+                ...
+            }
+        }
+    ],
+    "testingdata": [
+        {
+            "text": "{TRAININGTEXT}",
+            "language": "{LANGUAGETEXT (not relevant for training and can be ignored, language is set in the model config)}",
+            "entities": {
+                "{ENTITY1}": "{VALUE1}",
+                "{ENTITY2}": "{VALUE2}",
+                ...
+            }
+        }
+    ],
+    "entities": ["{ENTITY1}", "{ENTITY2}", ...],
+    "language": "en",
+    "modeltype": "spacy"
+}</programlisting>
+<simpara>It is generally not recommended using this endpoint for <literal>curl</literal> commands, as it easily gets chaotic and is fairly long, but the general <literal>curl</literal> command would be:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X POST -H "Content-Type: application/json" -d '{YOUR JSON OBJECT}' http://demos.swe.htwk-leipzig.de:8081/retrain</programlisting>
+<simpara>and a working example is:</simpara>
+<programlisting language="console" linenumbering="unnumbered">curl -X 'POST' \
+  'http://demos.swe.htwk-leipzig.de:8081/retrain' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "testingdata": [
+    {
+      "text": "I am called Marilyn Monroe.",
+      "language": "en",
+      "entities": {
+        "First_Name": "Marilyn",
+        "Last_Name": "Monroe"
+      }
+    }
+  ],
+  "trainingdata": [
+    {
+      "text": "I am called Marilyn Monroe.",
+      "language": "en",
+      "entities": {
+        "First_Name": "Marilyn",
+        "Last_Name": "Monroe"
+      }
+    }
+  ],
+  "entities": [
+    "First_Name",
+    "Middle_Name",
+    "Last_Name"
+  ],
+  "language": "en",
+  "modeltype": "spacy"
+}'</programlisting>
+</section>
+<section id="_health_endpoint">
+<title>Health endpoint</title>
+<simpara>To check if the service is active, just run: <ulink url="http://0.0.0.0:8081/health">http://0.0.0.0:8081/health</ulink></simpara>
+</section>
+</section>
+<section id="_ml_flow_logging">
+<title>ML Flow Logging</title>
+<simpara>You can use ML Flow Logging with this service.
+For information on the setup and usage of an ML Flow Server, please refer to its <ulink url="https://www.mlflow.org/docs/latest/tracking.html">Documentation</ulink>.
+ML Flow Logging is always activated for interactions with the service from the Qanary interface, triggering the (<link linkend="ner-logging">NER Logging</link>).
+It might as well be used for interactions with the <link linkend="retrain-endpoint">/retrain</link> (<link linkend="training-logging">Training Logging</link>) and the <link linkend="api-endpoint">/api</link> (<link linkend="ner-logging">NER Logging</link>) endpoint by adding the parameter <literal>use_ml_logger</literal> to the request and setting it to <literal>True</literal>.</simpara>
+<section id="_training_logging">
+<title>Training Logging</title>
+<simpara>When starting a training process via the <literal>\retrain</literal>-endpoint with the <literal>use_ml_logger</literal> parameter set to <literal>True</literal>, the training will be logged once its concluded.
+The logs can be found in the <literal>AutoML Model Training</literal> tab.
+The logged data contains the attributes:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>component_name</literal>: The name of the component that triggered this log
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>component_type</literal>: The type of the component, in this case always NER
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>entities</literal>: The entities this trained model could recognize
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>hardware</literal>: The hardware the model was trained on
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>language</literal>: The language of the model, specified by the user
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>model</literal>: The model that was used. SpaCy returns multiple models (the last and the best), but the component always takes "model-best", which was the best performing.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>model_uuid</literal>: The UUID that&#8217;s assigned to this training run.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>modeltype</literal>: The model type entered with the training options
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>time</literal>: The time needed to conclude the training
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>Within the "Artifacts", there are some files logged:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>Datasets</literal>: In this directory, text files are stored that contain the training and testing data given
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>config.json</literal>: The configuration used to train the model
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>model_metrics.json</literal>: This file is the meta.json of the model, it contains all kinds of information such as the performance while training.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>When the training is concluded, the testdata is used to trigger the NER process and log the results for each given input.
+This logging happens within the <link linkend="ner-logging">NER Logging</link> and the UUID will be the same for the training-logs as well as the NER logs.</simpara>
+</section>
+<section id="_ner_logging">
+<title>NER Logging</title>
+<simpara>When a POST request is sent to the <literal>/api</literal> endpoint (found in the <literal>AutoML Model Testing</literal> tab), with the <literal>use_ml_logger</literal> parameter set to <literal>True</literal>, the NER results will be logged for each of the given input texts.
+Files will not be logged as one but each input line by itself.
+The logged values are:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>input</literal>: The given input text
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>model_uuid</literal>: The UUID of this call; It will be the same for all input texts of the same file and if the process is triggered through the training, it will be the same as the training process, too.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>runtime</literal>: The time needed for the result for this text.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>Within the <literal>Artifacts</literal>, there are two files logged:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>predicted_target.json</literal>: The result of the NER
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>true_target.json</literal>: The expected result, if provided with the input
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_annotation_logging">
+<title>Annotation Logging</title>
+<simpara>When a text is entered in the Qanary interface (found in the <literal>AutoML Component Annotations</literal> tab), the created annotations are logged, too.
+There are no additional parameters to be set as this is a requirement.
+The logged data is:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<literal>input</literal>: The given input text
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>model_uuid</literal>: The UUID of this call
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>predicted_target</literal>: The result of the NER, containing the recognized entities and their positions within the input
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>qanary_graph_id</literal>: The graph the annotations was saved to
+</simpara>
+</listitem>
+</itemizedlist>
+<warning><simpara>Please note that the process of logging NER uploads can take up some time if bigger datasets are provided.</simpara></warning>
+</section>
+</section>
+</section>
+</article>
