@@ -1,8 +1,13 @@
-name: GitHub Actions Demo
+name: GitHub Actions Asciidoc Transfer
+
 run-name: ${{ github.actor }} is generating a README in Markdown.
+
 on: [push]
+
 jobs:
-  Generate-Readme:
+
+  generate_readme:
+    name: Create Markdown Readme
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -15,7 +20,7 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - name: Remove unwanted characters
+      - name: Remove characters / phrases that cannot be interpreted in the asciidoc - markdown conversion
         run: |
           sed -i "s/\[.lead\]/ /g" ./README.adoc 
           sed -i "s/>/ /g" ./README.adoc 
@@ -24,13 +29,31 @@ jobs:
           asciidoc -b docbook README.adoc
           cat ./README.xml
           pandoc -f docbook -t markdown_strict ./README.xml -o ./READMEmd.md
-      - name: Store new READMEmd.md
+          sed -i '1i# Automation Service \n' READMEmd.md 
+      - name: Upload generated Readme for job 1 generate_readme
         uses: actions/upload-artifact@v3
         with:
-          name: upload-markdown
-          path: |
-            ./READMEmd.md
-      - uses: stefanzweifel/git-auto-commit-action@v4
+          name: readme
+          path: READMEmd.md
+
+  push_readme:
+    name: Push new Readme
+    needs: generate_readme
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download readme result from job 1 generate_readme
+        uses: actions/download-artifact@v3
         with:
-            commit_message: New README
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          name: readme
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git status
+          git add READMEmd.md
+          git commit -m "Actions Generated Readme"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

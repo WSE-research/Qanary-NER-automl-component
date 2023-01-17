@@ -16,10 +16,10 @@ endif::[]
 
 = Automation Service
 
- 
+[.lead]
 
 The Automation Service offers the possibility to have an automatically generated model based on its given data and endpoints to interact with it.
-In this file, the examples given will follow a NER concerning names, s.t., it tries to identify _Firstnames_, _Middle names_, and _Lastnames_.
+In this file, the examples given will follow a NER concerning names, s.t., it tries to identify _Firstnames_, _Middlenames_, and _Lastnames_.
 However, you may define any entities to recognize that you want.
 A demo of the service can be accessed at {demodomain}.
 
@@ -191,7 +191,7 @@ To connect the service with an already existing ML Flow Logger, the following st
 
 The full error message might look like this:
 
-  ERROR: The Compose file './docker-compose_QanaryComponent.yml' is invalid because: services.automation_component.deploy.resources.reservations value Additional properties are not allowed ('devices' was unexpected)
+> ERROR: The Compose file './docker-compose_QanaryComponent.yml' is invalid because: services.automation_component.deploy.resources.reservations value Additional properties are not allowed ('devices' was unexpected)
 
 Reason: The prepared docker-compose file is integrating GPU capabilities. 
 Following the https://docs.docker.com/compose/gpu-support/#enabling-gpu-access-to-service-containers[Docker documentation], to take advantage of this functionality you need at least docker-compose version v1.28.0+ (check by running the command: `docker-compose --version`).
@@ -208,7 +208,7 @@ pip install docker-compose --upgrade
 
 The full error message might look like this:
 
-  ERROR: for automation_component  device_requests param is not supported in API versions < 1.40
+> ERROR: for automation_component  device_requests param is not supported in API versions < 1.40
 
 Reason: the docker-compose version used is too outdated. 
 In building this service, the lowest used version was `2.12.2` which worked fine.
@@ -249,18 +249,18 @@ It allows you to ask questions and the recognized entities will be saved in the 
 If you enter a question such as "My name is Annemarie Wittig." with the default model, there will be two annotations created, one for the first- and one for the last name. The generated query will be something like this:
 
 ----
-PREFIX dbr: <http://dbpedia.org/resource/ 
-PREFIX dbo: <http://dbpedia.org/ontology/ 
-PREFIX qa: <http://www.wdaqua.eu/qa# 
-PREFIX oa: <http://www.w3.org/ns/openannotation/core/ 
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns# 
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema# 
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 INSERT {
-GRAPH <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65  {
+GRAPH <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65> {
     ?entityAnnotation0 a qa:AnnotationOfInstance .
     ?entityAnnotation0 oa:hasTarget [
         a   oa:SpecificResource;
-            oa:hasSource    <http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1  ;
+            oa:hasSource    <http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1> ;
             oa:hasSelector  [
                 a oa:TextPositionSelector ; 
                 oa:start "11"^^xsd:nonNegativeInteger ; 
@@ -268,14 +268,14 @@ GRAPH <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65  {
             ]
         ] .
     ?entityAnnotation0 oa:hasBody "FIRST_NAME"^^xsd:string ; 
-        oa:annotatedBy <urn:qanary:AutomationServiceComponent  ; 
+        oa:annotatedBy <urn:qanary:AutomationServiceComponent> ; 
         oa:annotatedAt ?time ;
         qa:score "0.5"^^xsd:decimal .
         
     ?entityAnnotation1 a qa:AnnotationOfInstance .
     ?entityAnnotation1 oa:hasTarget [
         a   oa:SpecificResource;
-            oa:hasSource    <http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1  ;
+            oa:hasSource    <http://localhost:8080/question/stored-question__text_dc03e843-a2bf-4de0-aec0-280fc8d4adb1> ;
             oa:hasSelector  [
                 a oa:TextPositionSelector ; 
                 oa:start "21"^^xsd:nonNegativeInteger ; 
@@ -283,7 +283,7 @@ GRAPH <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65  {
             ]
         ] .
     ?entityAnnotation1 oa:hasBody "MIDDLE_NAME"^^xsd:string ; 
-        oa:annotatedBy <urn:qanary:AutomationServiceComponent  ; 
+        oa:annotatedBy <urn:qanary:AutomationServiceComponent> ; 
         oa:annotatedAt ?time ;
         qa:score "0.5"^^xsd:decimal .       
     }
@@ -298,11 +298,11 @@ WHERE {
 Querying data from the Qanary triplestore with a query like the following, will return the NER parts of the annotation:
 
 ----
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns# 
-PREFIX oa: <http://www.w3.org/ns/openannotation/core/ 
-PREFIX qa: <http://www.wdaqua.eu/qa# 
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX qa: <http://www.wdaqua.eu/qa#>
 SELECT *
-FROM <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65 
+FROM <urn:graph:6ddac4c3-fbc1-4016-a107-d9126b806b65>
 WHERE {
     ?annotationId rdf:type ?type.
     ?annotationId oa:hasBody ?body.
@@ -322,7 +322,7 @@ Alternatively, you can curl against the pipeline directly using a curl command s
 [source,CURL]
 [subs="attributes"]
 ----
-curl --location --request POST 'http://{demodomain}:{automationservicedemoport}/questionanswering?textquestion=Who is Barack Obama?&language=en&componentlist%5B%5D=AutomationServiceComponent'
+curl --location --request POST '{demodomain}:{automationservicedemoport}/questionanswering?textquestion=Who is Barack Obama?&language=en&componentlist%5B%5D=AutomationServiceComponent'
 ----
 
 
@@ -750,7 +750,7 @@ curl -X 'POST' \
 
 ==== Health endpoint
 
-To check if the service is active, just run: http://0.0.0.0:{automationservicedemoport}/health
+To check if the service is active, just run: {demodomain}{automationservicedemoport}/health
 
 === ML Flow Logging
 
