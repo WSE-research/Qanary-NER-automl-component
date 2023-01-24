@@ -63,7 +63,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: List all folders
     - name: Move address model
       run: mv ./AutomationService/ExampleBodies/ExampleModels/address_model_nobase/ ./AutomationService/AutomationServiceBackend/data/model/
     - name: Build the Docker image
