@@ -57,3 +57,23 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  build_docker_image_address_nobase:
+    name: Build image with baseless address model
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: List all folders
+    - name: Move address model
+      run: mv ./AutomationService/ExampleBodies/ExampleModels/address_model_nobase/ ./AutomationService/AutomationServiceBackend/data/model/
+    - name: Build the Docker image
+      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Tag docker image
+      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-address-nobase:0.1.0
+    - name: Push docker image
+      run: docker push qanary/qanary-component-ner-automl-pretrained-address-nobase:0.1.0
