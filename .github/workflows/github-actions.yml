@@ -46,17 +46,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: readme
-      - name: Commit files
+      - name: Commit and Push file 
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git status
-          git add READMEmd.md
-          git commit -m "Actions Generated Readme"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          if [[ -n $(git diff READMEmd.md) ]]; then
+            git add READMEmd.md
+            git commit -m "Actions Generated Readme"
+            git push
+          else
+            echo "README is the same. Nothing to commit."
+          fi
 
   build_docker_image_address_nobase:
     name: Build image with baseless address model
