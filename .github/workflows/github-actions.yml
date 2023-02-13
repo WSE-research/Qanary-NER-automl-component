@@ -28,13 +28,14 @@ jobs:
         run: | 
           asciidoc -b docbook README.adoc
           cat ./README.xml
-          pandoc -f docbook -t markdown_strict ./README.xml -o ./READMEmd.md
-          sed -i '1i# Automation Service \n' READMEmd.md 
+          pandoc -f docbook -t markdown_strict ./README.xml -o ./README.md
+          sed -i '1i# Automation Service \n' README.md 
+          mv README.md AutomationService
       - name: Upload generated Readme for job 1 generate_readme
         uses: actions/upload-artifact@v3
         with:
           name: readme
-          path: READMEmd.md
+          path: AutomationService/README.md
 
   push_readme:
     name: Push new Readme
@@ -51,29 +52,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git status
-          if [[ -n $(git diff READMEmd.md) ]]; then
-            git add READMEmd.md
+          if [[ -n $(git diff AutomationService/README.md) ]]; then
+            git add AutomationService/README.md
             git commit -m "Actions Generated Readme"
             git push
           else
             echo "README is the same. Nothing to commit."
           fi
-
-  build_docker_image_address_nobase:
-    name: Build image with baseless address model
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Move address model
-      run: rsync -a ./AutomationService/ExampleBodies/ExampleModels/address_model_nobase/* ./AutomationService/AutomationServiceBackend/data/model/
-    - name: Build the Docker image
-      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
-    - name: Docker Login
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Tag docker image
-      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-address-nobase:0.1.0
-    - name: Push docker image
-      run: docker push qanary/qanary-component-ner-automl-pretrained-address-nobase:0.1.0
