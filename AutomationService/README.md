@@ -977,3 +977,12 @@ requirement. The logged data is:
 
 Please note that the process of logging NER uploads can take up some
 time if bigger datasets are provided.
+
+Ready to go Docker Images
+=========================
+
+There are Docker images available that have pre-trained models for name
+and address recognition - one using a spacy model as a base and one
+using no base at all. They can be found in the [Qanary
+Dockerhub](https://hub.docker.com/u/qanary), named
+`qanary/qanary-component-ner-automl-pretrained-{the model you want}`.
