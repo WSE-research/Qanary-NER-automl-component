@@ -47,6 +47,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: readme
+      - name: move README to correct position
+        run: mv README.md AutomationService/
       - name: Commit and Push file 
         run: |
           git config --local user.email "action@github.com"
