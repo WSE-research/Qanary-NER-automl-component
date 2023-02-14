@@ -14,7 +14,7 @@ from app.helper.filehelper import FileHelper
 from app.helper.spacy_trainer import ModelHelper
 
 
-class ModelReTrainer:
+class ModelRetrainer:
     """
     The class manages all actions that are needed to prepare, move, etc. files for retraining a model
     and trigger the interactions with Spacy
@@ -26,7 +26,6 @@ class ModelReTrainer:
     training_data_path = os.getenv('TRAININGLOCATION')
     training_docbins = os.getenv('TRAININGDOCBINS')
     model_location = os.getenv('MODELLOCATION')
-    config = os.getenv('SPACYCONFIG')
 
     temporary_trainingdata_path = os.getenv('TEMPTRAININGLOCATION')
     temporary_docbin_path = os.getenv('TEMPDOCBINLOCATION')

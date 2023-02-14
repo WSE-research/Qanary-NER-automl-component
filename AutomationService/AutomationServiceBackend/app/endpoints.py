@@ -9,7 +9,7 @@ import logging
 from app.model.request_handler import handle_post_api_call, handle_post_retrain_call, handle_get_api_call, \
     handle_get_visualization_call, handle_nlp_call_with_start_and_end, handle_retrain_logging
 from app.spacy_model.interact_with_spacy import SpacyInterface
-from app.spacy_model.retrain_a_model import ModelReTrainer
+from app.spacy_model.retrain_a_model import ModelRetrainer
 from app.helper.filehelper import FileHelper
 
 router = APIRouter(
@@ -19,7 +19,7 @@ router = APIRouter(
 
 logging.getLogger().setLevel(logging.INFO)
 interface = SpacyInterface()
-trainer = ModelReTrainer()
+trainer = ModelRetrainer()
 helper = FileHelper()
 
 
@@ -159,31 +159,31 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
 
 
 @router.post("/retrain",
-             tags=["retrain"],
-             summary="Retrain a model.",
-             response_description="A success message.",
-             openapi_extra={
-                 "requestBody": {
-                     "content": {
-                         "application/json": {
-                             "schema": Retraindata.schema(ref_template="#/components/schemas/{model}")
-                         }
-                     }
-                 }
-             },
-             responses={
-                 200: {
-                     "description": "An example success message",
-                     "content": {
-                         "application/json": {
-                             "schema": SuccessMessage.schema(ref_template="#/components/schemas/{model}")
-                         }
-                     },
-                 }
-             })
+            tags=["retrain"],
+            summary="Retrain a model.",
+            response_description="A success message.",
+            openapi_extra={
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": Retraindata.schema(ref_template="#/components/schemas/{model}")
+                        }
+                    }
+                }
+            },
+            responses={
+                200: {
+                    "description": "An example success message",
+                    "content": {
+                        "application/json": {
+                            "schema": SuccessMessage.schema(ref_template="#/components/schemas/{model}")
+                        }
+                    },
+                }
+            })
 async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] = File(None),
-                              testingdata: Optional[UploadFile] = File(None),
-                              options: Optional[UploadFile] = File(None), use_ml_logger: Optional[str] = 'False'):
+                            testingdata: Optional[UploadFile] = File(None),
+                            options: Optional[UploadFile] = File(None), use_ml_logger: Optional[str] = 'False'):
     """
     Retrain your model in runtime based on your given input. It needs either two CSV files
     (trainingdata and testingdata) with an optional JSON file (options, defaults will be set if none given),
@@ -191,9 +191,7 @@ async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] =
     mentioned files within one. If correctly structured, the data is used to retrain a new model and overwrite
     the existing one. Optionally, you can allow MLFlow if you set use_ml_logger to True.
     """
-    use_ml_logger = use_ml_logger.lower() in ('true', '1', 't')
-    if use_ml_logger:
-        print("deepcopy")
+    if use_ml_logger.lower() in ('true', '1', 't'):
         log_traindata = deepcopy(trainingdata)
         log_testdata = deepcopy(testingdata)
         log_options = deepcopy(options)
@@ -201,15 +199,14 @@ async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] =
     response = await handle_post_retrain_call(req, trainer, interface, trainingdata, testingdata, options)
 
     if use_ml_logger:
-        print("retrain")
         await handle_retrain_logging(trainer, interface, log_traindata, log_testdata, log_options)
-        close_file(log_traindata)
-        close_file(log_testdata)
-        close_file(log_options)
 
     close_file(trainingdata)
     close_file(testingdata)
     close_file(options)
+    close_file(log_traindata)
+    close_file(log_testdata)
+    close_file(log_options)
 
     return response
 

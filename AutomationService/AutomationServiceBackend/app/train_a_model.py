@@ -37,7 +37,7 @@ helper = ModelHelper()
 
 # check if model copied into output folder (default directory)
 if check_if_model_exists("/code/app/spacy_model/output/model-best"):
-    logging.info("A trained model was given. Nothing to be done here")
+    logging.info("A trained model was given. Nothing to be done here. ")
 else:
     # check if training and validation data is given
     logging.info("Attempting training a new model.")

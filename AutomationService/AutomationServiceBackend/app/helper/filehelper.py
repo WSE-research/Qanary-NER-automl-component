@@ -79,17 +79,32 @@ class FileHelper:
     
         return new_data
         
+    def add_to_json_if_exists(self, goal_json, src_json, label, prefix, suffix):
+        if label in src_json:
+            goal_json[prefix + label + suffix] = src_json[label]
+        return goal_json
+
     def normalize_json(self, json_object):
         """
-        Normalize 2 level JSON list to 1 level
+        Transform Json object from the standard layout of results to csv.
         """
         new_json = dict()
-        counter = 1
-        for entry in json_object:
-            new_entry = self.normalize_entry(entry)
-            new_json[counter] = new_entry
-            counter = counter + 1
+        for i in range(len(json_object)):
+            entry = json_object[i]
+            new_entry = self.add_to_json_if_exists({}, entry, 'text', '', '')
+            new_entry = self.add_to_json_if_exists(new_entry, entry, 'language', '', '')
 
+            if 'entities' in entry:
+                for expected_entity in entry['entities']:
+                    new_entry = self.add_to_json_if_exists(new_entry, entry['entities'], expected_entity, 'expected_', '') 
+
+            if 'results' in entry:
+                counter = 1
+                for resulted_entity in entry['results']:
+                    for unit in resulted_entity:
+                        new_entry = self.add_to_json_if_exists(new_entry, resulted_entity, unit, 'recognized_', f"_{counter}") 
+                    counter += 1
+            new_json[i] = new_entry
         return new_json
 
     def save_generated_json(self, generated, accept_header):
