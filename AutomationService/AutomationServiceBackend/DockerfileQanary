@@ -22,8 +22,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         openssh-server \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && :
+    && rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /code
 
