@@ -1,4 +1,4 @@
-name: GitHub Actions Docker Push
+name: GitHub Actions Docker Push GER
 
 run-name: ${{ github.actor }} is pushing German images to Docker.
 

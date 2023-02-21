@@ -1,0 +1,148 @@
+name: GitHub Actions Docker Push Bert
+
+run-name: ${{ github.actor }} is pushing Bert images to Docker.
+
+on: [push]
+
+jobs:
+  build_docker_image_address_bert_de:
+    runs-on: ubuntu-latest
+    name: Push image using an German address model (Bert)
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Delete current model
+      run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
+    - name: Adjust env variables to match the model
+      run: |
+        mv AutomationService/.env.template-address-training AutomationService/.env
+        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        echo 'MODELTYPE="bert"' >> AutomationService/.env
+        echo 'MODELLANGUAGE="de"' >> AutomationService/.env
+    - name: Build the Docker image
+      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Tag docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-address-bert-de:latest
+    - name: Tag fixed version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest "qanary/qanary-component-ner-automl-pretrained-address-bert-de:${{ github.ref_name }}"
+    - name: Push latest docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push qanary/qanary-component-ner-automl-pretrained-address-bert-de:latest
+    - name: Push fixed docker image version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push "qanary/qanary-component-ner-automl-pretrained-address-bert-de:${{ github.ref_name }}"
+
+  build_docker_image_address_bert_en:
+    runs-on: ubuntu-latest
+    name: Push image using an English address model (Bert)
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Delete current model
+      run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
+    - name: Adjust env variables to match the model
+      run: |
+        mv AutomationService/.env.template-address-training AutomationService/.env
+        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        echo 'MODELTYPE="bert"' >> AutomationService/.env
+        echo 'MODELLANGUAGE="en"' >> AutomationService/.env
+    - name: Build the Docker image
+      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Tag docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-address-bert-en:latest
+    - name: Tag fixed version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest "qanary/qanary-component-ner-automl-pretrained-address-bert-en:${{ github.ref_name }}"
+    - name: Push latest docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push qanary/qanary-component-ner-automl-pretrained-address-bert-en:latest
+    - name: Push fixed docker image version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push "qanary/qanary-component-ner-automl-pretrained-address-bert-en:${{ github.ref_name }}"
+
+  build_docker_image_name_bert_de:
+    runs-on: ubuntu-latest
+    name: Push image using an German name model (Bert)
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Delete current model
+      run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
+    - name: Adjust env variables to match the model
+      run: |
+        mv AutomationService/.env.template-name-training AutomationService/.env
+        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        echo 'MODELTYPE="bert"' >> AutomationService/.env
+        echo 'MODELLANGUAGE="de"' >> AutomationService/.env
+    - name: Build the Docker image
+      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Tag docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-name-bert-de:latest
+    - name: Tag fixed version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest "qanary/qanary-component-ner-automl-pretrained-name-bert-de:${{ github.ref_name }}"
+    - name: Push latest docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push qanary/qanary-component-ner-automl-pretrained-name-bert-de:latest
+    - name: Push fixed docker image version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push "qanary/qanary-component-ner-automl-pretrained-name-bert-de:${{ github.ref_name }}"
+
+      name: GitHub Actions Docker Push Bert
+
+  build_docker_image_name_bert_en:
+    runs-on: ubuntu-latest
+    name: Push image using an English name model (Bert)
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Delete current model
+      run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
+    - name: Adjust env variables to match the model
+      run: |
+        mv AutomationService/.env.template-name-training AutomationService/.env
+        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+        echo 'MODELTYPE="bert"' >> AutomationService/.env
+        echo 'MODELLANGUAGE="en"' >> AutomationService/.env
+    - name: Build the Docker image
+      run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Tag docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest qanary/qanary-component-ner-automl-pretrained-name-bert-en:latest
+    - name: Tag fixed version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker tag automation-component-container:latest "qanary/qanary-component-ner-automl-pretrained-name-bert-en:${{ github.ref_name }}"
+    - name: Push latest docker image
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push qanary/qanary-component-ner-automl-pretrained-name-bert-en:latest
+    - name: Push fixed docker image version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: docker push "qanary/qanary-component-ner-automl-pretrained-name-bert-en:${{ github.ref_name }}"
