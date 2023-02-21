@@ -110,8 +110,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: docker push "qanary/qanary-component-ner-automl-pretrained-name-bert-de:${{ github.ref_name }}"
 
-      name: GitHub Actions Docker Push Bert
-
   build_docker_image_name_bert_en:
     runs-on: ubuntu-latest
     name: Push image using an English name model (Bert)
