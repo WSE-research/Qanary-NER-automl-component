@@ -14,7 +14,7 @@ from app.helper.filehelper import FileHelper
 from app.helper.spacy_trainer import ModelHelper
 
 
-class ModelReTrainer:
+class ModelRetrainer:
     """
     The class manages all actions that are needed to prepare, move, etc. files for retraining a model
     and trigger the interactions with Spacy

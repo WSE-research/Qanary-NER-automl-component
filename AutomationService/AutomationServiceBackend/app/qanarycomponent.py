@@ -79,13 +79,13 @@ async def qanary_service(request: Request):
                             oa:annotatedAt ?time ;
                             qa:score "0.5"^^xsd:decimal .
             """.format(annotations=annotations,
-                       question_uri=question_uri,
-                       entityid=entityid,
-                       entity=entity,
-                       start=start,
-                       end=end,
-                       component=SERVICE_NAME_COMPONENT.replace(" ", "-"),
-                       counter=counter)
+                        question_uri=question_uri,
+                        entityid=entityid,
+                        entity=entity,
+                        start=start,
+                        end=end,
+                        component=SERVICE_NAME_COMPONENT.replace(" ", "-"),
+                        counter=counter)
             counter += 1
 
     binds = ''
