@@ -26,11 +26,7 @@ interface = SpacyInterface()
 trainer = ModelRetrainer()
 helper = FileHelper()
 
-use_mlflow = os.getenv('USE_MLFLOW')
-train = os.getenv('TRAININGDATA')
-print(use_mlflow)
-print(train)
-
+use_mlflow = os.getenv('MLFLOW_ACTIVATED')
 
 class Input(BaseModel):
     text: str = Field(
@@ -210,13 +206,13 @@ async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] =
 
     if use_mlflow.lower() in ('true', '1', 't'):
         await handle_retrain_logging(trainer, interface, log_traindata, log_testdata, log_options)
-        close_file(log_traindata)
-        close_file(log_testdata)
-        close_file(log_options)
 
     close_file(trainingdata)
     close_file(testingdata)
     close_file(options)
+    close_file(log_traindata)
+    close_file(log_testdata)
+    close_file(log_options)
 
     return response
 
