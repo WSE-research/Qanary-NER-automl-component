@@ -759,7 +759,8 @@ To check if the service is active, just run: {demodomain}{automationservicedemop
 You can use ML Flow Logging with this service. 
 For information on the setup and usage of an ML Flow Server, please refer to its link:https://www.mlflow.org/docs/latest/tracking.html[Documentation]. 
 ML Flow Logging is always activated for interactions with the service from the Qanary interface, triggering the (xref:ner-logging[NER Logging]). 
-It might as well be used for interactions with the xref:retrain-endpoint[/retrain] (xref:training-logging[Training Logging]) and the xref:api-endpoint[/api] (xref:ner-logging[NER Logging]) endpoint by adding the parameter `use_ml_logger` to the request and setting it to `True`.
+It might as well be used for interactions with the xref:retrain-endpoint[/retrain] (xref:training-logging[Training Logging]) and the xref:api-endpoint[/api] (xref:ner-logging[NER Logging]) endpoint by setting the parameter `MLFLOW_ACTIVATED`  to `True`. 
+The parameter is found in the link:./AutomationService/AutomationServiceBackend/app/.env[inner .env file].
 
 ==== Training Logging
 
