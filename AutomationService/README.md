@@ -891,8 +891,9 @@ the Qanary interface, triggering the ([NER Logging](#ner-logging)). It
 might as well be used for interactions with the
 [/retrain](#retrain-endpoint) ([Training Logging](#training-logging))
 and the [/api](#api-endpoint) ([NER Logging](#ner-logging)) endpoint by
-adding the parameter `use_ml_logger` to the request and setting it to
-`True`.
+setting the parameter `MLFLOW_ACTIVATED` to `True`. The parameter is
+found in the [inner .env
+file](./AutomationService/AutomationServiceBackend/app/.env).
 
 ### Training Logging
 

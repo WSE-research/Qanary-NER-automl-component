@@ -26,11 +26,7 @@ interface = SpacyInterface()
 trainer = ModelRetrainer()
 helper = FileHelper()
 
-use_mlflow = os.getenv('USE_MLFLOW')
-train = os.getenv('TRAININGDATA')
-print(use_mlflow)
-print(train)
-
+use_mlflow = os.getenv('MLFLOW_ACTIVATED')
 
 class Input(BaseModel):
     text: str = Field(
