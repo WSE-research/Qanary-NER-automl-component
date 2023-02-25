@@ -4,13 +4,17 @@ from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from copy import deepcopy
+from dotenv import load_dotenv
 import logging
+import os
 
 from app.model.request_handler import handle_post_api_call, handle_post_retrain_call, handle_get_api_call, \
     handle_get_visualization_call, handle_nlp_call_with_start_and_end, handle_retrain_logging
 from app.spacy_model.interact_with_spacy import SpacyInterface
 from app.spacy_model.retrain_a_model import ModelRetrainer
 from app.helper.filehelper import FileHelper
+
+load_dotenv()
 
 router = APIRouter(
     tags=["endpoints"],
@@ -21,6 +25,11 @@ logging.getLogger().setLevel(logging.INFO)
 interface = SpacyInterface()
 trainer = ModelRetrainer()
 helper = FileHelper()
+
+use_mlflow = os.getenv('USE_MLFLOW')
+train = os.getenv('TRAININGDATA')
+print(use_mlflow)
+print(train)
 
 
 class Input(BaseModel):
@@ -142,8 +151,7 @@ def call_recognition_with_entity_position(text: str = 'Text to identify'):
                     },
                 }
             })
-async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] = File(None),
-                            use_ml_logger: Optional[str] = 'False'):
+async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] = File(None)):
     """
     Generate a NER result of multiple input texts.
     If you enter a csv file, each line must contain the text that shall be identified in the first column.
@@ -151,10 +159,11 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
     text that is supposed to be identified with a "text" label.
     Any other wanted columns / objects can be added and will not be changed or removed by the service.
     The result will be the input file annotated with the results.
-    Optionally, you can allow MLFlow if you set use_ml_logger to True. 
+    Optionally, you can allow MLFlow if you set USE_MLFLOW to True in the .env file. 
     """
+    global use_mlflow
     response = await handle_post_api_call(req, interface, helper, file_to_identify,
-                                            use_ml_logger.lower() in ('true', '1', 't'))
+                                            use_mlflow.lower() in ('true', '1', 't'))
     return response
 
 
@@ -183,22 +192,23 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
             })
 async def handle_retrain_call(req: Request, trainingdata: Optional[UploadFile] = File(None),
                             testingdata: Optional[UploadFile] = File(None),
-                            options: Optional[UploadFile] = File(None), use_ml_logger: Optional[str] = 'False'):
+                            options: Optional[UploadFile] = File(None)):
     """
     Retrain your model in runtime based on your given input. It needs either two CSV files
     (trainingdata and testingdata) with an optional JSON file (options, defaults will be set if none given),
     three JSON files (trainingdata, testingdata and options) or a JSON request body containing all three previously
     mentioned files within one. If correctly structured, the data is used to retrain a new model and overwrite
-    the existing one. Optionally, you can allow MLFlow if you set use_ml_logger to True.
+    the existing one. Optionally, you can allow MLFlow if you set USE_MLFLOW to True in the .env file.
     """
-    if use_ml_logger.lower() in ('true', '1', 't'):
+    global use_mlflow
+    if use_mlflow.lower() in ('true', '1', 't'):
         log_traindata = deepcopy(trainingdata)
         log_testdata = deepcopy(testingdata)
         log_options = deepcopy(options)
 
     response = await handle_post_retrain_call(req, trainer, interface, trainingdata, testingdata, options)
 
-    if use_ml_logger:
+    if use_mlflow.lower() in ('true', '1', 't'):
         await handle_retrain_logging(trainer, interface, log_traindata, log_testdata, log_options)
 
     close_file(trainingdata)

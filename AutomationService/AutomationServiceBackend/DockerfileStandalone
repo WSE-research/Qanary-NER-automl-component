@@ -32,8 +32,6 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY ./requirements.txt /code/requirements.txt
 
 RUN pip install wheel
-
-RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 RUN pip install -r /code/requirements.txt
 #RUN python -m spacy download en_core_web_sm
 

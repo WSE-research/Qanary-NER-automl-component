@@ -125,11 +125,11 @@ build the images. Please note that if the service runs as a standalone,
 it will be running on the port *8002* per default as opposed to 8080 and
 8081.
 
-    docker-compose -f docker-compose_Standalone.yml build
+    docker-compose -f docker-compose_standalone.yml build
 
 You can then run the service via:
 
-    docker-compose -f docker-compose_Standalone.yml up
+    docker-compose -f docker-compose_standalone.yml up
 
 Add `-d` to the call to have it run in the background and not be bound
 by the running console.
@@ -986,3 +986,37 @@ and address recognition - one using a spacy model as a base and one
 using no base at all. They can be found in the [Qanary
 Dockerhub](https://hub.docker.com/u/qanary), named
 `qanary/qanary-component-ner-automl-pretrained-{the model you want}`.
+
+-   [The image with a spacy based model for name (first, middle and last
+    name) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-spacy-de)
+
+-   [The image with a spacy based model for name (first, middle and last
+    name) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-spacy-en)
+
+-   [The image without a base model for name (first, middle and last
+    name) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-nobase-de)
+
+-   [The image without a base model for name (first, middle and last
+    name) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-nobase-en)
+
+-   [The image with a spacy based model for address (street, house
+    number, postal code and city) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-spacy-de)
+
+-   [The image with a spacy based model for address (street, house
+    number, postal code and city) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-spacy-en)
+
+-   [The image without a base model for address (street, house number,
+    postal code and city) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-de)
+
+-   [The image without a base model for address (street, house number,
+    postal code and city) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-en)
+
+-   Bert models TBD

@@ -12,7 +12,7 @@ services:
           MODELTYPE: ${MODELTYPE} 
           LANGUAGE: ${MODELLANGUAGE}
       volumes:
-        - "./AutomationServiceBackend:/app"
+        - "./AutomationServiceBackend:/app:cached"
       ports: 
         - "8002:8002"
     #Remove these if your service has no GPU; adjust if you use a different driver
