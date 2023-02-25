@@ -16,8 +16,8 @@ class ResultBuilder:
     def reload_language_model(self, language):
         new_nlp = None
         model = ""
-        if 'BASE_' + language in os.environ:
-            model = os.environ['BASE_' + language]
+        if 'BASE_' + language.upper() in os.environ:
+            model = os.environ['BASE_' + language.upper()]
         else:
             logging.warning(f"No base model found for language {language} to build results with. A default English model will be used. (This is ONLY for the result building and not the actual classification)")
             model = os.environ['BASE_EN']
@@ -82,7 +82,6 @@ class ResultBuilder:
         # Build a list of connected tokens based on a general model
         doc = self.nlp(recognition_doc.text)
         tokens = self.get_connected_tokens(doc)
-        print(tokens)
         result_list = []
         result_object = self.initialize_empty_result_object(labels=labels)
 
@@ -126,7 +125,6 @@ class ResultBuilder:
     def update_result_object(self, entity, result_object, use_span):
         label = entity.label_
         content = entity.text
-        print(f"{label}: {content}")
         if use_span:
             content = {
                 'start': entity.start_char,

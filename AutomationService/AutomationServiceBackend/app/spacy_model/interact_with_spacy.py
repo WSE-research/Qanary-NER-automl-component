@@ -71,24 +71,25 @@ class SpacyInterface:
         return dataframe
 
     def append_doc_to_csv(self, result, dataframe, row):
+        entity_nr = 1
         for entity in result['results']:
             for label in entity:
                 if(entity[label] == ""):
                     continue
-                counter = 1
-                found_position = False
-                while not found_position:
-                    column = f"{label}_{counter}"
-                    if column in dataframe:
-                        if (dataframe[column][row] == "" or dataframe[column][row] == None):
-                            dataframe[column][row] = entity[label]
-                            found_position = True
-                        else:
-                            counter += 1
+                column_label = f"{label}_{entity_nr}"
+
+                if column_label in dataframe:
+                    cell_is_nan = pd.isna(dataframe.iloc[row,dataframe.columns.get_loc(column_label)])
+                    if (dataframe[column_label][row] == "" or dataframe[column_label][row] == None or cell_is_nan):
+                        dataframe[column_label][row] = entity[label]
                     else:
-                        dataframe[column] = np.nan
-                        dataframe[column][row] = entity[label]
-                        found_position = True
+                        logging.warn(f"Unexpected content for label {column_label} in dataframe; already exists with content {dataframe[column_label][row]}")
+
+                else: 
+                    dataframe[column_label] = np.nan
+                    dataframe[column_label][row] = entity[label]
+
+            entity_nr += 1
         return dataframe
 
     def bulk_recognition_csv_file_with_mlflow(self, uploadfile: UploadFile, run_uuid: str, ml_logger):
