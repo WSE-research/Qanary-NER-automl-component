@@ -6,6 +6,9 @@ from enum import Enum
 
 class ResultBuilder:
 
+    # Tags to use for building the compound lists
+    tag_list = ["compound", "nmod", "nummod"]
+
     nlp = None
 
     def __init__(self):
@@ -55,10 +58,11 @@ class ResultBuilder:
         """
         compounds = []
         for tok in doc:
-            if tok.dep_ != "compound":
+            if tok.dep_ not in self.tag_list:
                 token_list = [tok.text]
                 for child in tok.children:
-                    if child.dep_ == "compound":
+                    print(f"{child.text}: {child.dep_}")
+                    if child.dep_ in self.tag_list:
                         token_list.append(child.text)
                 compounds.append(token_list)
         return compounds
@@ -93,31 +97,32 @@ class ResultBuilder:
             outer_content = outer_entity.text
 
             # Grab a Token list that contains the recognized entity content (e.g. a name)
-            token_list_with_entity = self.get_token_to_ent(outer_content, tokens)
-            if(token_list_with_entity != None):
+            token_list_for_entity = self.get_token_to_ent(outer_content, tokens)
+            if(token_list_for_entity != None):
                 # Remove the token
-                tokens.remove(token_list_with_entity)
-
+                tokens.remove(token_list_for_entity)
                 # Reiterate over recognized entities
                 for inner_entity in recognition_doc.ents:
                     inner_content = inner_entity.text
-
+                    print(inner_content)
                     # If another entity is found that is contained in the token list, add it to the result object
-                    if inner_content in token_list_with_entity:
+                    if inner_content in token_list_for_entity:
                         # If multiple have been recognized, merge them
                         result_object = self.update_result_object(inner_entity, result_object, use_span)
-                        token_list_with_entity.remove(inner_content)
+                        token_list_for_entity.remove(inner_content)
                         entities.remove(inner_content)
-                    if len(token_list_with_entity) == 0:
+                    if len(token_list_for_entity) == 0:
                         continue
             # If entity is not found in tokens and has not been added to another object already (is still within the entity list), save as alone standing
-            elif token_list_with_entity == None and outer_content in entities:
+            elif token_list_for_entity == None and outer_content in entities:
                 result_object = self.update_result_object(outer_entity, result_object, use_span)
                 entities.remove(outer_content)
             # If entity is not found in tokens and has been stored in another object (is not in entity list), do nothing
             else: 
                 continue
             result_list.append(result_object)
+            #if (len(result_list) == len(recognition_doc.ents)):
+            # TODO fail save when each recognized entity is in its own separate object?
             result_object = self.initialize_empty_result_object(labels)
     
         return result_list

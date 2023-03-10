@@ -1,5 +1,5 @@
 {
     "entities": ["Street", "House_Nr", "Post_Code", "City"],
-    "language": "de",
-    "modeltype": "spacy"
+    "language": "en",
+    "modeltype": "empty"
 }

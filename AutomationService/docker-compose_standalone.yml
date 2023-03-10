@@ -14,7 +14,7 @@ services:
       volumes:
         - "./AutomationServiceBackend:/app:cached"
       ports: 
-        - "8002:8002"
+        - "8081:8081"
     #Remove these if your service has no GPU; adjust if you use a different driver
       deploy:
         resources:
