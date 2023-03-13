@@ -44,7 +44,39 @@ class ResultBuilder:
                 return spacy.load(model)
         except:
             logging.error('No downloadable model found for the Result Building Process.')
-        
+
+    def transform_compounds_to_entity_string(self, doc, compounds):
+        token_strings = []
+        for i in range(len(doc)):
+            current_token = doc[i].text
+            token_list = self.get_token_to_ent(current_token, compounds)
+            if token_list is not None:
+                compounds.remove(token_list)
+                token_string = ""
+                for j in range(i, len(doc)): #iterate over token list from current position onwards to generate the entity string
+                    doc_text = doc[j].text
+                    if doc_text in token_list:
+                        token_list.remove(doc_text)
+                        token_string += doc_text
+                        if j < len(doc) - 1 and doc[j+1].dep_ == "punct":
+                            token_string = token_string + doc[j+1].text
+                        else:
+                            token_string = token_string + " "
+                    if len(token_list) == 0:
+                        i = j
+                        continue
+                if (token_string != ""):
+                    token_strings.append(token_string)
+        return token_strings 
+
+
+    def get_connected_tokens_as_string(self, doc):
+        """
+        From a given list of connected tokens, generate a new list where tokens are merged into strings
+        """
+        compounds = self.get_connected_tokens(doc)
+        return self.transform_compounds_to_entity_string(doc, compounds)
+            
     #needed?
     def initialize_empty_result_object(self, labels):
         result = {}
@@ -61,7 +93,6 @@ class ResultBuilder:
             if tok.dep_ not in self.tag_list:
                 token_list = [tok.text]
                 for child in tok.children:
-                    print(f"{child.text}: {child.dep_}")
                     if child.dep_ in self.tag_list:
                         token_list.append(child.text)
                 compounds.append(token_list)
@@ -78,6 +109,33 @@ class ResultBuilder:
                     return list
         return None
 
+    def get_token_string_to_ent(self, ent, tokens):
+        """
+        Returns the token list containing the content of an entity based on string matching
+        """
+        for string in tokens:
+            if ent == string or ent is string or ent in string:
+                return string
+        return None
+    
+    def build_result_list_simple(self, recognition_doc, labels, use_span = False):
+        """
+        Build a result object without regards to POS tags
+        """ 
+        result_list = []
+        result_object = self.initialize_empty_result_object(labels=labels)
+
+        for entity in recognition_doc.ents: 
+            label = entity.label_
+            if result_object[label] == "":
+                result_object = self.update_result_object(entity, result_object, use_span)
+            else:
+                result_list.append(result_object)
+                result_object = self.initialize_empty_result_object(labels=labels)
+                result_object = self.update_result_object(entity, result_object, use_span)
+        result_list.append(result_object)
+        return result_list
+
     def build_result_list(self, recognition_doc, labels, use_span = False):
         """
         Build a result object based on a given input doc
@@ -85,7 +143,7 @@ class ResultBuilder:
         """
         # Build a list of connected tokens based on a general model
         doc = self.nlp(recognition_doc.text)
-        tokens = self.get_connected_tokens(doc)
+        token_strings = self.get_connected_tokens_as_string(doc)
         result_list = []
         result_object = self.initialize_empty_result_object(labels=labels)
 
@@ -97,33 +155,32 @@ class ResultBuilder:
             outer_content = outer_entity.text
 
             # Grab a Token list that contains the recognized entity content (e.g. a name)
-            token_list_for_entity = self.get_token_to_ent(outer_content, tokens)
-            if(token_list_for_entity != None):
+            token_string_for_entity = self.get_token_string_to_ent(outer_content, token_strings)
+            if(token_string_for_entity != None):
                 # Remove the token
-                tokens.remove(token_list_for_entity)
+                token_strings.remove(token_string_for_entity)
                 # Reiterate over recognized entities
                 for inner_entity in recognition_doc.ents:
                     inner_content = inner_entity.text
-                    print(inner_content)
                     # If another entity is found that is contained in the token list, add it to the result object
-                    if inner_content in token_list_for_entity:
+                    if inner_content in token_string_for_entity:
                         # If multiple have been recognized, merge them
                         result_object = self.update_result_object(inner_entity, result_object, use_span)
-                        token_list_for_entity.remove(inner_content)
+                        token_string_for_entity.replace(inner_content, "")
                         entities.remove(inner_content)
-                    if len(token_list_for_entity) == 0:
+                    if len(token_string_for_entity) == 0:
                         continue
             # If entity is not found in tokens and has not been added to another object already (is still within the entity list), save as alone standing
-            elif token_list_for_entity == None and outer_content in entities:
+            elif token_string_for_entity == None and outer_content in entities:
                 result_object = self.update_result_object(outer_entity, result_object, use_span)
                 entities.remove(outer_content)
             # If entity is not found in tokens and has been stored in another object (is not in entity list), do nothing
             else: 
                 continue
             result_list.append(result_object)
-            #if (len(result_list) == len(recognition_doc.ents)):
-            # TODO fail save when each recognized entity is in its own separate object?
             result_object = self.initialize_empty_result_object(labels)
+        #if (len(result_list) == len(recognition_doc.ents)):
+        #    result_list = self.build_result_list_simple(recognition_doc, labels, use_span)
     
         return result_list
 
