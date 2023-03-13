@@ -63,7 +63,6 @@ class ResultBuilder:
                         else:
                             token_string = token_string + " "
                     if len(token_list) == 0:
-                        i = j
                         continue
                 if (token_string != ""):
                     token_strings.append(token_string)
