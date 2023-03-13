@@ -3,6 +3,7 @@ import os
 import spacy
 from spacy.cli import download
 from enum import Enum
+import re
 
 class ResultBuilder:
 
@@ -74,7 +75,8 @@ class ResultBuilder:
         From a given list of connected tokens, generate a new list where tokens are merged into strings
         """
         compounds = self.get_connected_tokens(doc)
-        return self.transform_compounds_to_entity_string(doc, compounds)
+        lists = self.transform_compounds_to_entity_string(doc, compounds)
+        return lists
             
     #needed?
     def initialize_empty_result_object(self, labels):
@@ -82,6 +84,13 @@ class ResultBuilder:
         for entity in labels:
             result[entity] = ""
         return result
+    
+    def recursively_grab_children(self, token, token_list):
+        for child in token.children:
+            if child.dep_ in self.tag_list:
+                token_list.append(child.text)
+                token_list = self.recursively_grab_children(child, token_list)
+        return token_list
 
     def get_connected_tokens(self, doc):
         """
@@ -91,12 +100,10 @@ class ResultBuilder:
         for tok in doc:
             if tok.dep_ not in self.tag_list:
                 token_list = [tok.text]
-                for child in tok.children:
-                    if child.dep_ in self.tag_list:
-                        token_list.append(child.text)
+                token_list = self.recursively_grab_children(tok, token_list)
+
                 compounds.append(token_list)
         return compounds
-        
 
     def get_token_to_ent(self, ent, tokens):
         """
@@ -113,7 +120,7 @@ class ResultBuilder:
         Returns the token list containing the content of an entity based on string matching
         """
         for string in tokens:
-            if ent == string or ent is string or ent in string:
+            if re.search(r"(^|[\?\.!\- \,])" + re.escape(ent) + r"([\?\.!\- \,]|$)", string):
                 return string
         return None
     
@@ -161,11 +168,16 @@ class ResultBuilder:
                 # Reiterate over recognized entities
                 for inner_entity in recognition_doc.ents:
                     inner_content = inner_entity.text
+                    
                     # If another entity is found that is contained in the token list, add it to the result object
-                    if inner_content in token_string_for_entity:
+                    if re.search(r"(^|[\?\.!\- \,])" + re.escape(inner_content) + r"([\?\.!\- \,]|$)", token_string_for_entity):
                         # If multiple have been recognized, merge them
                         result_object = self.update_result_object(inner_entity, result_object, use_span)
-                        token_string_for_entity.replace(inner_content, "")
+                        token_string_for_entity = token_string_for_entity.replace(inner_content, "")
+                        if inner_content not in entities:
+                            logging.warn(f"Unexpected entity found: {inner_content}; It is connected to the leftover string \"{token_string_for_entity}\". The left entity list is:")
+                            logging.warn(entities)
+                            continue
                         entities.remove(inner_content)
                     if len(token_string_for_entity) == 0:
                         continue
