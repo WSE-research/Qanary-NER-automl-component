@@ -7,7 +7,7 @@ param 2: Output file
 """
 
 no_of_files = 0
-result_text = ",Total Objects Checked,Absolute Matches,Average Matches"
+result_text = ",Total Expected Objects Checked,Absolute Matches,Average Matches"
 
 objects_matched_total = 0
 objects_counted_total = 0

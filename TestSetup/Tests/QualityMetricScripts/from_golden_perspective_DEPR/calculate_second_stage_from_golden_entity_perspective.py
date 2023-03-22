@@ -7,7 +7,7 @@ param 2: Output file
 """
 
 no_of_files = 0
-result_text = ",Total Objects Checked,Average Similarities"
+result_text = ",Total Expected Objects Checked,Average Similarities"
 
 similarities_perc_total = 0
 objects_counted_total = 0
