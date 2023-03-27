@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import re
 """
 param 1: Directory storing the json result files
 param 2: Output file
@@ -13,7 +14,6 @@ similarities_perc_total = 0
 objects_counted_total = 0
 similarities_perc_current = 0
 objects_counted_current = 0
-
 
 def handle_closest_match(no_of_similarities, total):
     """
@@ -35,9 +35,12 @@ def get_item_length(item):
 
 def get_shared_items(main_item, comparing_item):
     matches = {}
-    for key in comparing_item:
-        if (key.upper() in main_item and main_item[key.upper()] != "" and main_item[key.upper()] == comparing_item[key]):
-            matches[key.upper()] = main_item[key.upper()]
+    comparing_item_insensitive = set(k.upper() for k in comparing_item)
+
+    for key in main_item:
+        key_without_counter = re.sub(r'(_[1-9]*$)+', '', key) 
+        if (key_without_counter in comparing_item_insensitive and main_item[key] != "" and main_item[key] == comparing_item_insensitive[key_without_counter]):
+            matches[key_without_counter] = main_item[key]
     return matches
 
 def find_and_handle_closest_golden_object(result_object, golden_objects):

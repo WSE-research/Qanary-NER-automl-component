@@ -8,10 +8,12 @@
 import sys
 import json
 import os
+import re
 
 """
 param 1: Directory storing the json result files
 param 2: Output file
+param 3: Debug Files
 """
 
 no_of_files = 0
@@ -43,10 +45,11 @@ def flatten_dict(item, result_lists):
             #saving as list in case multiple same named entities occur
             if (value in result_lists):
                 curr = result_lists[value]
-                curr.append(key)
+                # handle results where multiple separate values were recognized with the same value, but connected
+                curr.append(re.sub(r'_[1-9]+', '', key))
                 result_lists[value] = curr
             else:
-                result_lists[value] = [key]
+                result_lists[value] = [re.sub(r'_[1-9]+', '', key)]
     return result_lists
 
 def get_values_as_list (dic):

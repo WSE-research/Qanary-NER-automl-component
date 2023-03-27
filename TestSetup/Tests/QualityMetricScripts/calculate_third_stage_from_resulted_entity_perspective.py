@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import re
 """
 param 1: Directory storing the json result files
 param 2: Output file
@@ -28,16 +29,34 @@ def find_and_handle_exact_matches(expected, results):
     """
     global objects_matched_current
 
-    expected = {k.upper():v.upper() for k,v in expected.items()}
+    expected_insensitive = {k.upper():v for k,v in expected.items()}
     
-    for og in results:
-        result = {k.upper():v.upper() for k,v in og.items() if not isinstance(v, int)}
-        if expected == result:
+    for result in results:
+        result_copy = result.copy()
+        same = True
+
+        entities = []
+        #added this check so additional recongizes (which are from the different base models) don't cause errors
+        for item in expected_insensitive:
+            if item not in result_copy or expected_insensitive[item] != result_copy[item]:
+                same = False
+            if item in result_copy:
+                del (result_copy[item])
+            entities.append(item)
+
+        for item in result_copy:
+            #make sure no additional objects are left
+            key_without_counter = re.sub(r'(_[1-9]*$)+', '', item) 
+            if key_without_counter in entities: 
+                # more entities are recresultnized than intended
+                same = False
+
+        if same:
             objects_matched_current = objects_matched_current + 1
             # Make sure an object isn't counted double for multiple expected entity objects
-            og = add_debug(og, 1)
+            result = add_debug(result, 1)
         else:
-            og = add_debug(og, 0)
+            result = add_debug(result, 0)
 
     return results
 
