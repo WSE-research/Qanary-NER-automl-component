@@ -168,9 +168,12 @@ class ResultBuilder:
                 # Reiterate over recognized entities
                 for inner_entity in recognition_doc.ents:
                     inner_content = inner_entity.text
-                    
+
+                    # Make sure the entity is more than whitespaces and punctuations
+                    control_string = re.sub('[^A-Za-z0-9]+', '', inner_content) 
+
                     # If another entity is found that is contained in the token list, add it to the result object
-                    if re.search(r"(^|[\?\.!\- \,])" + re.escape(inner_content) + r"([\?\.!\- \,]|$)", token_string_for_entity):
+                    if re.search(r"(^|[\?\.!\- \,])" + re.escape(inner_content) + r"([\?\.!\- \,]|$)", token_string_for_entity) and control_string != "":
                         # If multiple have been recognized, merge them
                         result_object = self.update_result_object(inner_entity, result_object, use_span)
                         token_string_for_entity = token_string_for_entity.replace(inner_content, "")
