@@ -996,6 +996,14 @@ Dockerhub](https://hub.docker.com/u/qanary), named
     name) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-spacy-en)
 
+-   [The image with a bert based model for name (first, middle and last
+    name) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-bert-de)
+
+-   [The image with a bert based model for name (first, middle and last
+    name) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-bert-en)
+
 -   [The image without a base model for name (first, middle and last
     name) recognition in
     GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-nobase-de)
@@ -1012,6 +1020,14 @@ Dockerhub](https://hub.docker.com/u/qanary), named
     number, postal code and city) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-spacy-en)
 
+-   [The image with a bert based model for address (street, house
+    number, postal code and city) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-bert-de)
+
+-   [The image with a bert based model for address (street, house
+    number, postal code and city) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-bert-en)
+
 -   [The image without a base model for address (street, house number,
     postal code and city) recognition in
     GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-de)
@@ -1019,5 +1035,3 @@ Dockerhub](https://hub.docker.com/u/qanary), named
 -   [The image without a base model for address (street, house number,
     postal code and city) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-en)
-
--   Bert models TBD
