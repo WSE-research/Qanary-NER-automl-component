@@ -173,7 +173,9 @@ def generate_result_text(title, cor, inc, mis, spu):
 
     precision = cor / actual
     recall = cor / possible
-    f1 = (2 * precision * recall) / (precision + recall)
+    f1=0
+    if (precision + recall) !=0:
+        f1 = (2 * precision * recall) / (precision + recall)
 
     result_text = """{result_text}
 {title},,,,

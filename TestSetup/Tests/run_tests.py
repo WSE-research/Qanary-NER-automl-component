@@ -14,6 +14,8 @@ param 2: Options JSON file
 param 3: Number of folds
 param 4: URL of AutomationService
 param 5: [OPTIONAL] CSV file to save the training time to
+param 6: [OPTIONAL] CSV file for human dataset (single results)
+param 7: [OPTIONAL] JSON file for human dataset (multiple results)
 """
 testfile = sys.argv[1]
 optionsfile = sys.argv[2]
@@ -21,16 +23,26 @@ outputname = testfile.replace(".csv", "")
 folds = int(sys.argv[3])
 url = sys.argv[4]
 time_file = None
+human_single = None
+human_multiple = None
 
 logging.getLogger().setLevel(logging.INFO)
 
-if len(sys.argv) == 6:
+if len(sys.argv) >= 6:
     logging.info('Outputfile for timemapping given; time will be added')
     time_file = sys.argv[5]
 
-lines = pd.read_csv(testfile, dtype=object)
-no_of_lines = len(lines)
+if len(sys.argv) >= 7:
+    logging.info('Outputfile for human dataset with single results given; will be added to testing iteration')
+    human_single = sys.argv[6]
 
+if len(sys.argv) == 8:
+    logging.info('Outputfile for human dataset with multiple results given; will be added to testing iteration')
+    human_multiple = sys.argv[7]
+
+f = open(testfile)
+json_file = json.load(f)
+no_of_objects = len(json_file)
 
 def is_non_zero_file(fpath):
     return os.path.isfile(fpath) and os.path.getsize(fpath) > 0
@@ -42,13 +54,12 @@ def note_time(curr_fold, time_value):
             text_file.write('File_Name,Fold,Training Time')
         text_file.write(outputname + ',' + str(curr_fold) + ',' + str(time_value) + '\n')
 
-
 async def run_tests(curr_fold):
-    retrainfiles = [('trainingdata', ('tmp/train.csv', open('tmp/train.csv', 'rb'), 'text/csv')),
-                    ('testingdata', ('tmp/test.csv', open('tmp/test.csv', 'rb'), 'text/csv')),
+    retrainfiles = [('trainingdata', ('tmp/train.json', open('tmp/train.json', 'rb'), 'application/json')),
+                    ('testingdata', ('tmp/test.json', open('tmp/test.json', 'rb'), 'application/json')),
                     ('options', ('tmp/options.json', open('tmp/options.json', 'rb'), 'application/json'))]
-    testfiles = [('file_to_identify', ('tmp/test.csv', open('tmp/test.csv', 'rb'), 'text/csv'))]
-    headers = {'accept': 'text/csv'}
+    testfiles = [('file_to_identify', ('tmp/recognition.json', open('tmp/recognition.json', 'rb'), 'application/json'))]
+    headers = {'accept': 'application/json'}
 
     start_time = time.time()
     resp = requests.post(url + 'retrain', files=retrainfiles)
@@ -56,55 +67,78 @@ async def run_tests(curr_fold):
     logging.info("retraining concluded")
     response = requests.post(url + 'api', files=testfiles, headers=headers)
     logging.info("NER concluded")
-    path = 'results/' + outputname.rsplit('/', 1)[1] + '-' + str(curr_fold) + '.csv'
+    path = 'tmp/results/base/' + outputname.rsplit('/', 1)[1].replace(".json", "") + '-' + str(curr_fold) + '.json'
     logging.info(response)
 
-    decoded_content = response.content.decode('utf-8')
-    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-    my_list = list(cr)
+    decoded_content = response.json()
 
     if time_file is not None:
         note_time(curr_fold, training_time)
+    
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(decoded_content, f, ensure_ascii=False, indent=4)
 
-    with open(path, 'w') as f:
-        writer = csv.writer(f)
-        for row in my_list:
-            writer.writerow(row)
+    if human_single is not None:
+        testfiles = [('file_to_identify', (human_single, open(human_single, 'rb'), 'application/json'))]
+        response = requests.post(url + 'api', files=testfiles, headers=headers)
+        path = 'tmp/results/human_single/' + outputname.rsplit('/', 1)[1].replace(".json", "") + 'human-' + str(curr_fold) + '.json'
+        
+        decoded_content = response.json()
+        
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(decoded_content, f, ensure_ascii=False, indent=4)
+
+    if human_multiple is not None:
+        testfiles = [('file_to_identify', (human_multiple, open(human_multiple, 'rb'), 'application/json'))]
+        response = requests.post(url + 'api', files=testfiles, headers={'accept': 'application/json'})
+
+        decoded_content = response.json()
+        path = 'tmp/results/human_multiple/' + outputname.rsplit('/', 1)[1].replace(".json", "") + 'human-' + str(curr_fold) + '.json'
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(decoded_content, f, ensure_ascii=False, indent=4)
 
     return True
 
 
 async def start_run():
     for j in range(folds):
-        testframe = pd.DataFrame(columns=lines.columns)
-        trainframe = pd.DataFrame(columns=lines.columns)
         options_obj = open(optionsfile)
         options_json = json.load(options_obj)
+        traindata = {}
+        testdata = {}
+        traindata["trainingdata"] = []
+        testdata["testingdata"] = []
 
-        start = no_of_lines / folds * j
-        end = no_of_lines / folds * (j + 1)
-        logging.info("Using rows " + str(start) + " to " + str(end) + " as testing data.")
-
-        testcount = 0
-        traincount = 0
-        for i in range(no_of_lines):
-            curr_row = lines.iloc[i]
-            if ((start - 1) <= i < (end - 1)) or (j == 0 and i == (no_of_lines - 1)):
-                testframe.loc[testcount] = curr_row
-                testcount = testcount + 1
+        start = no_of_objects / folds * j
+        end = no_of_objects / folds * (j + 1)
+        logging.info("Using objects " + str(start) + " to " + str(end) + " as testing data.")
+        for i in range(no_of_objects):
+            curr_json = json_file[i]
+            if ((start - 1) <= i < (end - 1)) or (j == 0 and i == (no_of_objects - 1)):
+                testdata["testingdata"].append(curr_json)
             else:
-                trainframe.loc[traincount] = curr_row
-                traincount = traincount + 1
+                traindata["trainingdata"].append(curr_json)
 
-        os.remove("tmp/train.csv")
-        os.remove("tmp/test.csv")
+
+        os.remove("tmp/train.json")
+        os.remove("tmp/recognition.json")
+        os.remove("tmp/test.json")
         os.remove("tmp/options.json")
-        trainframe.to_csv('tmp/train.csv', index=False)
-        testframe.to_csv('tmp/test.csv', index=False)
         with open('tmp/options.json', 'w') as f:
-            json.dump(options_json, f)
+            json.dump(options_json, f, indent= 4, ensure_ascii=False)
+
+        with open('tmp/train.json', 'w') as f:
+            json.dump(traindata, f, indent= 4, ensure_ascii=False)
+
+        with open('tmp/recognition.json', 'w') as f:
+            json.dump(testdata['testingdata'], f, indent= 4, ensure_ascii=False)
+
+        with open('tmp/test.json', 'w') as f:
+            json.dump(testdata, f, indent= 4, ensure_ascii=False)
 
         await run_tests(j)
+        options_obj.close()
 
 
 asyncio.run(start_run())
+f.close()
