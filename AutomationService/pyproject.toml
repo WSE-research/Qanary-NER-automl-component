@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "Qanary-NER-AutoML-component"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   { name="Annemarie Wittig", email="wittiganmarie@gmail.com" },
 ]
