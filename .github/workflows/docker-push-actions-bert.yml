@@ -13,13 +13,17 @@ jobs:
     - uses: actions/checkout@v3
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
-    - name: Adjust env variables to match the model
-      run: |
-        mv AutomationService/.env.template-address-training AutomationService/.env
-        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        echo 'MODELTYPE="bert"' >> AutomationService/.env
-        echo 'MODELLANGUAGE="de"' >> AutomationService/.env
+    - name: Clone new model from huggingface
+      run: git clone https://huggingface.co/AnnemarieWittig/bert-address-de0.1.1 ./AutomationService/AutomationServiceBackend/data/model/
+    - name: cat
+      run: cat ./AutomationService/AutomationServiceBackend/data/model/meta.json
+#    - name: Adjust env variables to match the model
+#      run: |
+#        mv AutomationService/.env.template-address-training AutomationService/.env
+#        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+#        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+#        echo 'MODELTYPE="bert"' >> AutomationService/.env
+#        echo 'MODELLANGUAGE="de"' >> AutomationService/.env
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
@@ -48,13 +52,17 @@ jobs:
     - uses: actions/checkout@v3
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
-    - name: Adjust env variables to match the model
-      run: |
-        mv AutomationService/.env.template-address-training AutomationService/.env
-        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        echo 'MODELTYPE="bert"' >> AutomationService/.env
-        echo 'MODELLANGUAGE="en"' >> AutomationService/.env
+    - name: Clone new model from huggingface
+      run: git clone https://huggingface.co/AnnemarieWittig/bert-address-en0.1.1 ./AutomationService/AutomationServiceBackend/data/model/
+    - name: cat
+      run: cat ./AutomationService/AutomationServiceBackend/data/model/meta.json
+    # - name: Adjust env variables to match the model
+    #   run: |
+    #     mv AutomationService/.env.template-address-training AutomationService/.env
+    #     grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     echo 'MODELTYPE="bert"' >> AutomationService/.env
+    #     echo 'MODELLANGUAGE="en"' >> AutomationService/.env
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
@@ -83,13 +91,17 @@ jobs:
     - uses: actions/checkout@v3
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
-    - name: Adjust env variables to match the model
-      run: |
-        mv AutomationService/.env.template-name-training AutomationService/.env
-        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        echo 'MODELTYPE="bert"' >> AutomationService/.env
-        echo 'MODELLANGUAGE="de"' >> AutomationService/.env
+    - name: Clone new model from huggingface
+      run: git clone https://huggingface.co/AnnemarieWittig/bert-name-de0.1.1 ./AutomationService/AutomationServiceBackend/data/model/
+    - name: cat
+      run: cat ./AutomationService/AutomationServiceBackend/data/model/meta.json
+    # - name: Adjust env variables to match the model
+    #   run: |
+    #     mv AutomationService/.env.template-name-training AutomationService/.env
+    #     grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     echo 'MODELTYPE="bert"' >> AutomationService/.env
+    #     echo 'MODELLANGUAGE="de"' >> AutomationService/.env
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
@@ -118,13 +130,17 @@ jobs:
     - uses: actions/checkout@v3
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
-    - name: Adjust env variables to match the model
-      run: |
-        mv AutomationService/.env.template-name-training AutomationService/.env
-        grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
-        echo 'MODELTYPE="bert"' >> AutomationService/.env
-        echo 'MODELLANGUAGE="en"' >> AutomationService/.env
+    - name: Clone new model from huggingface
+      run: git clone https://huggingface.co/AnnemarieWittig/bert-name-en0.1.1 ./AutomationService/AutomationServiceBackend/data/model/
+    - name: cat
+      run: cat ./AutomationService/AutomationServiceBackend/data/model/meta.json
+    # - name: Adjust env variables to match the model
+    #   run: |
+    #     mv AutomationService/.env.template-name-training AutomationService/.env
+    #     grep -v "MODELTYPE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     grep -v "MODELLANGUAGE" AutomationService/.env > AutomationService/.envtmp && mv AutomationService/.envtmp AutomationService/.env
+    #     echo 'MODELTYPE="bert"' >> AutomationService/.env
+    #     echo 'MODELLANGUAGE="en"' >> AutomationService/.env
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
