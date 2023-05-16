@@ -149,11 +149,11 @@ directory build the images for it. The setup in the docker-compose
 automatically creates a Qanary instance as well as a Stardog server to
 interact with.
 
-    docker-compose -f docker-compose_QanaryComponent.yml build
+    docker-compose -f docker-compose_qanary-example-local-stardog.yml build
 
 You can then run it via:
 
-    docker-compose -f docker-compose_QanaryComponent.yml up
+    docker-compose -f docker-compose_qanary-example-local-stardog.yml up
 
 Add `-d` to the call to have it run in the background and not be bound
 by the running console.
@@ -874,10 +874,7 @@ and a working example is:
       "entities": [
         "First_Name",
         "Middle_Name",
-        "Last_Name"
-      ],
-      "language": "en",
-      "modeltype": "spacy"
+        "Last_Name"and this is
     }'
 
 ### Health endpoint
@@ -992,6 +989,8 @@ and address recognition - one using a spacy model as a base and one
 using no base at all. They can be found in the [Qanary
 Dockerhub](https://hub.docker.com/u/qanary), named
 `qanary/qanary-component-ner-automl-pretrained-{the model you want}`.
+Note that these are built to be run as part of the qanary pipeline. For
+example, you could replace the build call in the
 
 -   [The image with a spacy based model for name (first, middle and last
     name) recognition in
