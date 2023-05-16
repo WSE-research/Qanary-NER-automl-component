@@ -100,6 +100,11 @@ like this:
 </tbody>
 </table>
 
+When generating the training data, there can only be one of each entity
+type given. The training process will not work for multiple. However,
+the later model has the code-setup to recognize and work with multiple
+results.n
+
 Training and testing data must follow the same basic structure (i.e.,
 they must have the same column name).
 
@@ -733,9 +738,9 @@ contents of the model-best) will be found in
 
 Everything else such as the other trained model will be deleted.
 
-Please note that the process of retraining can, and will, take some time
-to finish. The classification APIs can still be used with the original
-model while the training runs.
+Please note that the process of retraining can, depending on your
+hardware, take some time to finish. The classification APIs can still be
+used with the original model while the training runs.
 
 You can also send the parameter `use_ml_logger` with the value `True`
 with these request to activate logging using mlflow. This is recommended
