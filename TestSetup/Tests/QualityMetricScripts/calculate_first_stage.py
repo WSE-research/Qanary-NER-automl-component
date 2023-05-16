@@ -171,8 +171,20 @@ def generate_result_text(title, cor, inc, mis, spu):
     possible = cor + inc + mis
     actual = cor + inc + spu
 
-    precision = cor / actual
-    recall = cor / possible
+    precision = 0
+    if actual == 0:
+        if cor == 0:
+            precision = 1
+    else:
+        precision = cor / actual
+
+    recall = 0
+    if possible == 0:
+        if cor == 0:
+            recall = 1
+    else:
+        recall = cor / possible
+
     f1=0
     if (precision + recall) !=0:
         f1 = (2 * precision * recall) / (precision + recall)

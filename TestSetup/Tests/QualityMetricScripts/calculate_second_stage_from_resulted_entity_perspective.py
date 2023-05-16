@@ -83,7 +83,12 @@ def generate_result_text(name, no_of_objects, added_average_similarities):
     Calculate average similarities of objects and store it in a result string 
     """
     global result_text
-    percentage = added_average_similarities / no_of_objects
+    percentage = 0
+    if no_of_objects == 0:
+        if added_average_similarities == 0: 
+            percentage = 1
+    else: 
+        percentage = added_average_similarities / no_of_objects
 
     result_text = """{result_text}
 {name},{no_objects},{percentage}""".format(

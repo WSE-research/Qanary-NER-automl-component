@@ -8,7 +8,8 @@ import re
 class ResultBuilder:
 
     # Tags to use for building the compound lists
-    tag_list = ["compound", "nmod", "nummod"]
+    # tag_list suitable for English and German models
+    tag_list = ["compound", "nmod", "nummod", "pnc", "nk", "nmc"]
 
     nlp = None
 

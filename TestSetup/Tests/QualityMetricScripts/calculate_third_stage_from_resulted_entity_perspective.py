@@ -5,6 +5,7 @@ import re
 """
 param 1: Directory storing the json result files
 param 2: Output file
+param 3: Debug file
 """
 
 no_of_files = 0
@@ -83,7 +84,12 @@ def generate_result_text(name, no_of_objects, no_of_matches):
     Calculate the average total matches on the given input and structurally store them in a csv-string 
     """
     global result_text
-    percentage = no_of_matches / no_of_objects
+    percentage = 0
+    if no_of_objects == 0:
+        if no_of_matches == 0: 
+            percentage = 1
+    else: 
+        percentage = no_of_matches / no_of_objects
 
     result_text = """{result_text}
 {name},{no_objects},{no_of_matches},{percentage}""".format(
