@@ -26,7 +26,6 @@ class ModelRetrainer:
     training_data_path = os.getenv('TRAININGLOCATION')
     training_docbins = os.getenv('TRAININGDOCBINS')
     model_location = os.getenv('MODELLOCATION')
-    config = os.getenv('SPACYCONFIG')
 
     temporary_trainingdata_path = os.getenv('TEMPTRAININGLOCATION')
     temporary_docbin_path = os.getenv('TEMPDOCBINLOCATION')

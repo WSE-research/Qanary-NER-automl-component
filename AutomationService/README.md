@@ -100,6 +100,11 @@ like this:
 </tbody>
 </table>
 
+When generating the training data, there can only be one of each entity
+type given. The training process will not work for multiple. However,
+the later model has the code-setup to recognize and work with multiple
+results.n
+
 Training and testing data must follow the same basic structure (i.e.,
 they must have the same column name).
 
@@ -144,11 +149,11 @@ directory build the images for it. The setup in the docker-compose
 automatically creates a Qanary instance as well as a Stardog server to
 interact with.
 
-    docker-compose -f docker-compose_QanaryComponent.yml build
+    docker-compose -f docker-compose_qanary-example-local-stardog.yml build
 
 You can then run it via:
 
-    docker-compose -f docker-compose_QanaryComponent.yml up
+    docker-compose -f docker-compose_qanary-example-local-stardog.yml up
 
 Add `-d` to the call to have it run in the background and not be bound
 by the running console.
@@ -733,9 +738,9 @@ contents of the model-best) will be found in
 
 Everything else such as the other trained model will be deleted.
 
-Please note that the process of retraining can, and will, take some time
-to finish. The classification APIs can still be used with the original
-model while the training runs.
+Please note that the process of retraining can, depending on your
+hardware, take some time to finish. The classification APIs can still be
+used with the original model while the training runs.
 
 You can also send the parameter `use_ml_logger` with the value `True`
 with these request to activate logging using mlflow. This is recommended
@@ -869,10 +874,7 @@ and a working example is:
       "entities": [
         "First_Name",
         "Middle_Name",
-        "Last_Name"
-      ],
-      "language": "en",
-      "modeltype": "spacy"
+        "Last_Name"and this is
     }'
 
 ### Health endpoint
@@ -987,6 +989,8 @@ and address recognition - one using a spacy model as a base and one
 using no base at all. They can be found in the [Qanary
 Dockerhub](https://hub.docker.com/u/qanary), named
 `qanary/qanary-component-ner-automl-pretrained-{the model you want}`.
+Note that these are built to be run as part of the qanary pipeline. For
+example, you could replace the build call in the
 
 -   [The image with a spacy based model for name (first, middle and last
     name) recognition in
@@ -995,6 +999,14 @@ Dockerhub](https://hub.docker.com/u/qanary), named
 -   [The image with a spacy based model for name (first, middle and last
     name) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-spacy-en)
+
+-   [The image with a bert based model for name (first, middle and last
+    name) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-bert-de)
+
+-   [The image with a bert based model for name (first, middle and last
+    name) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-name-bert-en)
 
 -   [The image without a base model for name (first, middle and last
     name) recognition in
@@ -1012,6 +1024,14 @@ Dockerhub](https://hub.docker.com/u/qanary), named
     number, postal code and city) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-spacy-en)
 
+-   [The image with a bert based model for address (street, house
+    number, postal code and city) recognition in
+    GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-bert-de)
+
+-   [The image with a bert based model for address (street, house
+    number, postal code and city) recognition in
+    EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-bert-en)
+
 -   [The image without a base model for address (street, house number,
     postal code and city) recognition in
     GER](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-de)
@@ -1019,5 +1039,3 @@ Dockerhub](https://hub.docker.com/u/qanary), named
 -   [The image without a base model for address (street, house number,
     postal code and city) recognition in
     EN](https://hub.docker.com/r/qanary/qanary-component-ner-automl-pretrained-address-nobase-en)
-
--   Bert models TBD

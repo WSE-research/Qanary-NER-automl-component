@@ -45,6 +45,9 @@ class ModelHelper:
         if model_name in os.environ and config_name in os.environ:
             model = os.getenv(model_name)
             config = os.getenv(config_name)
+        elif config_name in os.environ and modeltype.lower() == 'empty':
+            config = os.getenv(config_name)
+            return config
         else:
             logging.warning('No modeltype or config found for modeltype: \"' + modeltype + '\" and \"' + lang + '\"')
             logging.warning('Using default model (english, empty base)')

@@ -2,3 +2,4 @@ Datasets
 tmp
 results
 .vscode
+*.sh

@@ -10,23 +10,33 @@ from datetime import datetime
 from dotenv import load_dotenv
 import time
 import uuid
+from .result_builder import ResultBuilder
+import numpy as np
+
 
 
 class SpacyInterface:
+    builder = ResultBuilder()
+
     load_dotenv()
     model_location = os.getenv('MODELLOCATION')
     results = os.getenv('RESULTLOCATION')
 
-    nlp = spacy.load(model_location)
+    nlp = None
 
     def __init__(self):
+        self.reload_nlp()
         logging.info("Spacy parser initialized")
+        
 
-    def initialize_empty_result_object(self):
-        result = {}
-        for entity in self.nlp.get_pipe('ner').labels:
-            result[entity] = ""
-        return result
+    def reload_nlp(self):
+        """
+        Attempt to reload the NER model and replace the current one if the re-load is successful
+        """
+        new_nlp = spacy.load(self.model_location)
+        language = new_nlp.meta["lang"]
+        self.builder.reload_language_model(language)
+        self.nlp = new_nlp
 
     def get_nlp(self, text):
         """
@@ -34,26 +44,17 @@ class SpacyInterface:
         """
         doc = self.nlp(text)
         results = {}
-        result_object = self.initialize_empty_result_object()
         results['text'] = text
-        result_list = []
-        for entity in doc.ents:
-            label = entity.label_
-            content = entity.text
-            if result_object[label] == "":
-                result_object[label] = content
-            else:
-                result_list.append(result_object)
-                result_object = self.initialize_empty_result_object()
-                result_object[label] = content
-
-        result_list.append(result_object)
-        results['result'] = result_list
+        result_list = self.builder.build_result_list(doc, self.get_labels())
+        results['results'] = result_list
 
         return results
 
     def get_metadata(self):
         return self.nlp.meta
+    
+    def get_labels(self):
+        return self.nlp.get_pipe('ner').labels
 
     def get_config(self):
         return self.nlp.config
@@ -64,23 +65,38 @@ class SpacyInterface:
         html = html + displacy.render([doc2], style="ent", page=True)
         return html
 
-    def reload_nlp(self):
-        """
-        Attempt to reload the NER model and replace the current one if the re-load is successful
-        """
-        new_nlp = spacy.load("./app/spacy_model/output/model-best")
-        self.nlp = new_nlp
-
     def append_entity_columns(self, dataframe: pd.DataFrame):
         for entity in self.nlp.get_pipe('ner').labels:
-            dataframe[entity] = ""
+            dataframe[entity + "_1"] = ""
+        return dataframe
+
+    def append_doc_to_csv(self, result, dataframe, row):
+        entity_nr = 1
+        for entity in result['results']:
+            for label in entity:
+                if(entity[label] == ""):
+                    continue
+                column_label = f"{label}_{entity_nr}"
+
+                if column_label in dataframe:
+                    cell_is_nan = pd.isna(dataframe.iloc[row,dataframe.columns.get_loc(column_label)])
+                    if (dataframe[column_label][row] == "" or dataframe[column_label][row] == None or cell_is_nan):
+                        dataframe[column_label][row] = entity[label]
+                    else:
+                        logging.warn(f"Unexpected content for label {column_label} in dataframe; already exists with content {dataframe[column_label][row]}")
+
+                else: 
+                    dataframe[column_label] = np.nan
+                    dataframe[column_label][row] = entity[label]
+
+            entity_nr += 1
         return dataframe
 
     def bulk_recognition_csv_file_with_mlflow(self, uploadfile: UploadFile, run_uuid: str, ml_logger):
         """
         Run each line of an input CSV file through NER and annotate it with the results. Additionally,
         generate the data for the logging in MLFLow
-        """
+        """ #TODO testing
         csv_df = pd.read_csv(StringIO(str(uploadfile.file.read(), 'utf-8')), encoding='utf-8', dtype=object)
         identify_df = self.append_entity_columns(csv_df)
         identifying_data = identify_df[csv_df.columns[0]]
@@ -89,7 +105,7 @@ class SpacyInterface:
 
         for i in range(no_trainingdata):
             start = time.time()
-            doc = self.nlp(identifying_data.iloc[i])
+            result = self.get_nlp(identifying_data.iloc[i])
             end = time.time() - start
 
             expected = {}
@@ -103,17 +119,14 @@ class SpacyInterface:
             if len(csv_df.columns) <= 1:
                 expected["entities"] = "none given"
 
-            result = {}
-            for entity in doc.ents:
-                identify_df[entity.label_][i] = entity.text
-                result[entity.label_] = entity.text
+            identify_df = self.append_doc_to_csv(result, identify_df, i)
 
             logging_item = {
                 "input": identifying_data.iloc[i],
                 "model_uuid": run_uuid,
                 "runtime": end,
                 "true_target": expected,
-                "predicted_target": result
+                "predicted_target": result['results']
             }
 
             logging_list.append(logging_item)
@@ -136,9 +149,8 @@ class SpacyInterface:
         no_trainingdata = len(identifying_data)
 
         for i in range(no_trainingdata):
-            doc = self.nlp(identifying_data.iloc[i])
-            for entity in doc.ents:
-                identify_df[entity.label_][i] = entity.text
+            result = self.get_nlp(identifying_data.iloc[i])
+            identify_df = self.append_doc_to_csv(result, identify_df, i)
 
         now = datetime.now()
         date_time = now.strftime("%m-%d-%Y_%H-%M-%S")
@@ -165,10 +177,10 @@ class SpacyInterface:
             start = time.time()
             doc = self.get_nlp(entry['text'])
             end = time.time() - start
-            entry['results'] = doc['result']
+            entry['results'] = doc['results']
 
             expected = {}
-            result = doc['result']
+            result = doc['results']
             if 'entities' in entry:
                 expected = entry['entities']
             else:
@@ -199,7 +211,7 @@ class SpacyInterface:
         for entry in jsonfile:
             entry['results'] = {}
             doc = self.get_nlp(entry['text'])
-            entry['results'] = doc['result']
+            entry['results'] = doc['results']
 
         path = self.results + 'identified-' + datetime.now().strftime("%m-%d-%Y_%H-%M-%S") + '.json'
         with open(path, 'w', encoding='utf-8') as f:
@@ -223,26 +235,12 @@ class SpacyInterface:
         Generate a NER result based on a given input string, returning start and end positions of results.
         This method is for qanary use.
         """
+        #TODO testing
         doc = self.nlp(text)
         results = {}
-        result_object = {}
         results['text'] = text
-        result_list = []
-        for entity in doc.ents:
-            label = entity.label_
-            text = entity.text
-            content = {
-                'start': entity.start_char,
-                'end': entity.end_char
-            }
-            if text != "":
-                if label not in result_object:
-                    result_object[label] = content
-                else:
-                    result_list.append(result_object)
-                    result_object = {label: content}
-
-        result_list.append(result_object)
-        results['result'] = result_list
+        result_list = self.builder.build_result_list(doc, [], True)
+        
+        results['results'] = result_list
 
         return results
