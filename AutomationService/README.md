@@ -353,7 +353,7 @@ Result](https://user-images.githubusercontent.com/59013332/197013196-6cce4c8b-07
 Alternatively, you can curl against the pipeline directly using a curl
 command such as:
 
-    curl --location --request POST 'http://demos.swe.htwk-leipzig.de:8081/questionanswering?textquestion=Who is Barack Obama?&language=en&componentlist%5B%5D=AutomationServiceComponent'
+    curl --location --request POST 'http://demos.swe.htwk-leipzig.de:40170/questionanswering?textquestion=Who is Barack Obama?&language=en&componentlist%5B%5D=AutomationServiceComponent'
 
 NER Endpoint
 ------------
@@ -369,16 +369,22 @@ text by your model. This is only an endpoint for quick result checks and
 does not allow mlflow logging. You can interact with it by using a call
 like:
 
-    curl -X 'GET' 'http://demos.swe.htwk-leipzig.de:8081/api?text=TEXT'
+    curl -X 'GET' 'http://demos.swe.htwk-leipzig.de:40170/api?text=TEXT'
 
 Remember to replace spaces with *%*. The result will be the original
 text, recognized entities with their labels and content:
 
-    {
-        "text": "text",
-        "Entity-Label1": "value1",
-        "Entity-Label2": "value2"
-    }
+    [
+        {
+            "text": "text",
+            "results": [
+                {
+                    "Entity-Label1": "value1",
+                    "Entity-Label2": "value2"
+                }
+            ]
+        }
+    ]
 
 #### POST
 
@@ -417,7 +423,7 @@ then annotate the CSV file with columns for all its recognizable
 entities and fill these up with the entities contained in each row. The
 `curl` command would be:
 
-    curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR CSV FILE PATH};type=text/csv" http://demos.swe.htwk-leipzig.de:8081/api
+    curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR CSV FILE PATH};type=text/csv" http://demos.swe.htwk-leipzig.de:40170/api
 
 The service will answer with the annotated CSV file. Additionally, the
 response file will also be saved locally in the container in the folder
@@ -552,22 +558,38 @@ response of the Web service would be:
 
     [
         {
-            "Text": "People call me Ida Clayton Henderson",
-            "First_Name": "Ida",
-            "Middle_Name": "Clayton",
-            "Last_Name": "Henderson",
-            "FIRST_NAME": "Ida",
-            "LAST_NAME": "Henderson",
-            "MIDDLE_NAME": "Clayton"
+            "text": "People call me Ida Clayton Henderson",
+            "entities": [
+                {
+                    "First_Name": "Ida",
+                    "Middle_Name": "Clayton",
+                    "Last_Name": "Henderson"
+                }
+            ],
+            "results": [
+                {
+                    "FIRST_NAME": "Ida",
+                    "LAST_NAME": "Henderson",
+                    "MIDDLE_NAME": "Clayton"
+                }
+            ]
         },
         {
-            "Text": "I am happy to meet you, too. You can call me Kira.",
-            "First_Name": "Kira",
-            "Middle_Name": null,
-            "Last_Name": "         ",
-            "FIRST_NAME": "Kira",
-            "LAST_NAME": "",
-            "MIDDLE_NAME": ""
+            "text": "I am happy to meet you, too. You can call me Kira.",
+            "entities": [
+                {
+                    "First_Name": "Kira",
+                    "Middle_Name": null,
+                    "Last_Name": ""
+                }
+            ],
+            "results": [
+                {
+                    "FIRST_NAME": "Kira",
+                    "LAST_NAME": "",
+                    "MIDDLE_NAME": ""
+                }
+            ]
         },
         ...
     ]
@@ -613,7 +635,7 @@ directories.
 
 A corresponding `curl` call would be:
 
-    curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR JSON FILE PATH};type=application/json" http://demos.swe.htwk-leipzig.de:8081/api
+    curl -X POST -H 'accept: application/json' -F "file_to_identify=@{YOUR JSON FILE PATH};type=application/json" http://demos.swe.htwk-leipzig.de:40170/api
 
 The response will be the annotated JSON, but it will also be stored
 locally in the container. It can be found as
@@ -683,23 +705,23 @@ response as in the JSON File Upload and all additional information can
 be referenced there. The only difference is the `curl` command, which
 will look something like this:
 
-    curl -X POST -H 'accept: application/json' -H "Content-Type: application/json" -d '{{YOUR JSON}}' http://demos.swe.htwk-leipzig.de:8081/api
+    curl -X POST -H 'accept: application/json' -H "Content-Type: application/json" -d '{{YOUR JSON}}' http://demos.swe.htwk-leipzig.de:40170/api
 
 Or an example of a `curl` with content:
 
     curl -X 'POST' \
-      'http://demos.swe.htwk-leipzig.de:8081/api' \
-      -H 'accept: application/json' \
-      -H 'Content-Type: application/json' \
-      -d '[
-      {
-        "text": "I am called Marilyn Monroe.",
-        "language": "en",
-        "entities": {
-          "First_Name": "Marilyn",
-          "Last_Name": "Monroe"
-        }
-      }
+    'http://demos.swe.htwk-leipzig.de:40170/api' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '[
+        {
+            "text": "I am called Marilyn Monroe.",
+            "language": "en",
+            "entities": {
+                "First_Name": "Marilyn",
+                "Last_Name": "Monroe"
+                }
+            }
     ]'
 
 Alternatively, the `accept`-header can be set to CSV, too.
@@ -755,7 +777,7 @@ as the files have the exact structure as the ones needed in the
 
 The corresponding `curl` call would be:
 
-    curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA CSV};type=text/csv' -F 'testingdata=@{YOUR VALIDATION CSV};type=text/csv' http://demos.swe.htwk-leipzig.de:8081/retrain
+    curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA CSV};type=text/csv' -F 'testingdata=@{YOUR VALIDATION CSV};type=text/csv' http://demos.swe.htwk-leipzig.de:40170/retrain
 
 ### JSON File Upload
 
@@ -782,8 +804,9 @@ initial key is named `testingdata` (instead of `trainingsdata`).
 
 For the JSON upload, a third file is needed. It is called options and
 contains a list of all possible `entities` the NER is supposed to
-recognize as well as the model `language` and `modeltype`. It has the
-following structure:
+recognize as well as the model `language` and `modeltype`. None of these
+are optional and they all must be provided. It has the following
+structure:
 
     {
         "entities": ["{ENTITY1}", "{ENTITY2}", ...],
@@ -802,7 +825,7 @@ generate a well-working NER model.
 The following `curl` command would start the retraining of the
 component’s model:
 
-    curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA JSON};type=application/json' -F 'testingdata=@{YOUR VALIDATION JSON};type=application/json' -F 'options=@{YOUR OPTIONS JSON};type=application/json' http://demos.swe.htwk-leipzig.de:8081/retrain
+    curl -X POST -F 'trainingdata=@{YOUR TRAININGDATA JSON};type=application/json' -F 'testingdata=@{YOUR VALIDATION JSON};type=application/json' -F 'options=@{YOUR OPTIONS JSON};type=application/json' http://demos.swe.htwk-leipzig.de:40170/retrain
 
 ### JSON Raw Upload
 
@@ -843,44 +866,44 @@ It is generally not recommended using this endpoint for `curl` commands,
 as it easily gets chaotic and is fairly long, but the general `curl`
 command would be:
 
-    curl -X POST -H "Content-Type: application/json" -d '{YOUR JSON OBJECT}' http://demos.swe.htwk-leipzig.de:8081/retrain
+    curl -X POST -H "Content-Type: application/json" -d '{YOUR JSON OBJECT}' http://demos.swe.htwk-leipzig.de:40170/retrain
 
 and a working example is:
 
     curl -X 'POST' \
-      'http://demos.swe.htwk-leipzig.de:8081/retrain' \
-      -H 'Content-Type: application/json' \
-      -d '{
-      "testingdata": [
+        'http://demos.swe.htwk-leipzig.de:40170/retrain' \
+        -H 'Content-Type: application/json' \
+        -d '{
+        "testingdata": [
         {
-          "text": "I am called Marilyn Monroe.",
-          "language": "en",
-          "entities": {
-            "First_Name": "Marilyn",
-            "Last_Name": "Monroe"
-          }
-        }
-      ],
-      "trainingdata": [
-        {
-          "text": "I am called Marilyn Monroe.",
-          "language": "en",
-          "entities": {
-            "First_Name": "Marilyn",
-            "Last_Name": "Monroe"
-          }
-        }
-      ],
-      "entities": [
-        "First_Name",
-        "Middle_Name",
-        "Last_Name"and this is
+            "text": "I am called Marilyn Monroe.",
+            "language": "en",
+            "entities": {
+                "First_Name": "Marilyn",
+                "Last_Name": "Monroe"
+            }
+            }
+        ],
+        "trainingdata": [
+            {
+            "text": "I am called Marilyn Monroe.",
+            "language": "en",
+            "entities": {
+                "First_Name": "Marilyn",
+                "Last_Name": "Monroe"
+            }
+            }
+        ],
+        "entities": [
+            "First_Name",
+            "Middle_Name",
+            "Last_Name"and this is
     }'
 
 ### Health endpoint
 
 To check if the service is active, just run:
-<http://demos.swe.htwk-leipzig.de8081/health>
+<http://demos.swe.htwk-leipzig.de40170/health>
 
 ML Flow Logging
 ---------------
