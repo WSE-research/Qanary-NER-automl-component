@@ -1,6 +1,6 @@
 :demodomain: http://demos.swe.htwk-leipzig.de
 :qanarydemoport: 40111
-:automationservicedemoport: 8081
+:automationservicedemoport: 40170
 
 :toc:
 :toclevels: 5
@@ -353,11 +353,17 @@ The result will be the original text, recognized entities with their labels and 
 
 [source,json]
 ----
-{
-    "text": "text",
-    "Entity-Label1": "value1",
-    "Entity-Label2": "value2"
-}
+[
+    {
+        "text": "text",
+        "results": [
+            {
+                "Entity-Label1": "value1",
+                "Entity-Label2": "value2"
+            }
+        ]
+    }
+]
 ----
 
 ===== POST
@@ -438,22 +444,38 @@ The response of the Web service would be:
 ----
 [
     {
-        "Text": "People call me Ida Clayton Henderson",
-        "First_Name": "Ida",
-        "Middle_Name": "Clayton",
-        "Last_Name": "Henderson",
-        "FIRST_NAME": "Ida",
-        "LAST_NAME": "Henderson",
-        "MIDDLE_NAME": "Clayton"
+        "text": "People call me Ida Clayton Henderson",
+        "entities": [
+            {
+                "First_Name": "Ida",
+                "Middle_Name": "Clayton",
+                "Last_Name": "Henderson"
+            }
+        ],
+        "results": [
+            {
+                "FIRST_NAME": "Ida",
+                "LAST_NAME": "Henderson",
+                "MIDDLE_NAME": "Clayton"
+            }
+        ]
     },
     {
-        "Text": "I am happy to meet you, too. You can call me Kira.",
-        "First_Name": "Kira",
-        "Middle_Name": null,
-        "Last_Name": "         ",
-        "FIRST_NAME": "Kira",
-        "LAST_NAME": "",
-        "MIDDLE_NAME": ""
+        "text": "I am happy to meet you, too. You can call me Kira.",
+        "entities": [
+            {
+                "First_Name": "Kira",
+                "Middle_Name": null,
+                "Last_Name": ""
+            }
+        ],
+        "results": [
+            {
+                "FIRST_NAME": "Kira",
+                "LAST_NAME": "",
+                "MIDDLE_NAME": ""
+            }
+        ]
     },
     ...
 ]
@@ -562,18 +584,18 @@ Or an example of a `curl` with content:
 [subs="attributes"]
 ----
 curl -X 'POST' \
-  '{demodomain}:{automationservicedemoport}/api' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '[
-  {
-    "text": "I am called Marilyn Monroe.",
-    "language": "en",
-    "entities": {
-      "First_Name": "Marilyn",
-      "Last_Name": "Monroe"
-    }
-  }
+'{demodomain}:{automationservicedemoport}/api' \
+-H 'accept: application/json' \
+-H 'Content-Type: application/json' \
+-d '[
+    {
+        "text": "I am called Marilyn Monroe.",
+        "language": "en",
+        "entities": {
+            "First_Name": "Marilyn",
+            "Last_Name": "Monroe"
+            }
+        }
 ]'
 ----
 
@@ -646,6 +668,7 @@ But, inside the file, the initial key is named `testingdata` (instead of `traini
 
 For the JSON upload, a third file is needed. 
 It is called options and contains a list of all possible `entities` the NER is supposed to recognize as well as the model `language` and `modeltype`. 
+None of these are optional and they all must be provided.
 It has the following structure:
 
 [source,json]
@@ -719,33 +742,33 @@ and a working example is:
 [subs="attributes"]
 ----
 curl -X 'POST' \
-  '{demodomain}:{automationservicedemoport}/retrain' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "testingdata": [
+    '{demodomain}:{automationservicedemoport}/retrain' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "testingdata": [
     {
-      "text": "I am called Marilyn Monroe.",
-      "language": "en",
-      "entities": {
-        "First_Name": "Marilyn",
-        "Last_Name": "Monroe"
-      }
-    }
-  ],
-  "trainingdata": [
-    {
-      "text": "I am called Marilyn Monroe.",
-      "language": "en",
-      "entities": {
-        "First_Name": "Marilyn",
-        "Last_Name": "Monroe"
-      }
-    }
-  ],
-  "entities": [
-    "First_Name",
-    "Middle_Name",
-    "Last_Name"and this is
+        "text": "I am called Marilyn Monroe.",
+        "language": "en",
+        "entities": {
+            "First_Name": "Marilyn",
+            "Last_Name": "Monroe"
+        }
+        }
+    ],
+    "trainingdata": [
+        {
+        "text": "I am called Marilyn Monroe.",
+        "language": "en",
+        "entities": {
+            "First_Name": "Marilyn",
+            "Last_Name": "Monroe"
+        }
+        }
+    ],
+    "entities": [
+        "First_Name",
+        "Middle_Name",
+        "Last_Name"and this is
 }'
 ----
 

@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "Qanary-NER-AutoML-component"
-version = "0.1.1"
+version = "1.0.0"
 authors = [
   { name="Annemarie Wittig", email="wittiganmarie@gmail.com" },
 ]
-description = "A python project allowing to run a fastapi server that can train and identify NER models in runtime and can be included in a qanary environment if wished."
+description = "A python project allowing to run a fastapi server that can train NER models and use them for identifying entities in runtime and can be included in a qanary environment if wished."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
