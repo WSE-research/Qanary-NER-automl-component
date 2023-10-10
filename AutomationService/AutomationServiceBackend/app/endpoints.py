@@ -173,8 +173,12 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
                     "application/json": {
                         "example": {
                             "text": "I am Marilyn Monroe.",
-                            "FIRST_NAME": "Marilyn",
-                            "LAST_NAME": "Monroe"
+                            "results": [
+                                {
+                                    "FIRST_NAME": "Marilyn",
+                                    "LAST_NAME": "Monroe"
+                                }
+                            ]
                         }
                     }
                 },
