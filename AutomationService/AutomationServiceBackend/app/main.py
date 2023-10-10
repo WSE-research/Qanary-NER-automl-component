@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from .endpoints import router
+from fastapi.middleware.cors import CORSMiddleware
 
 description = """
 This Automation Service can **automatically generate a NER model** and offer an endpoint to interact with it.
@@ -30,5 +31,13 @@ app = FastAPI(
     description=description,
     version="0.0.1",
 )
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 app.include_router(router)
