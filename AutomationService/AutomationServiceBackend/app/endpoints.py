@@ -163,7 +163,7 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
     return response
 
 
-@router.post("/ner",
+@router.post("/ner/{entity}",
         tags=["api"],
         summary="Send a text to recognize. You can also add an entity type and language, but those have no impact.",
         responses={
@@ -189,7 +189,6 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
                 "content": {
                     "application/json": {
                         "example": {
-                            "entity": "address", # The entity type to recognize
                             "text": "I live at 123 Main Street in New York City.", # The text to recognize entities in
                             "language": "en" # The language of the text
                         }
@@ -197,12 +196,12 @@ async def handle_api_call(req: Request, file_to_identify: Optional[UploadFile] =
                 }
             }
         })
-def send_request(request_body: dict):
+def send_request(entity, request_body: dict):
     """
     Receive a JSON object containing the indentified entities and their labels. The form depends on your model. 
     The values entity and language are optional and will only be logged. They are not needed and have no effect on the result.
     """
-    logging.info("Received request: " + str(request_body))
+    logging.info(f"Received request for entity {entity}: " + str(request_body))
 
     text = request_body['text']
     result = handle_get_api_call(text, interface)
