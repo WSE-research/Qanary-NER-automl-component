@@ -2,7 +2,9 @@ name: GitHub Actions Docker Push Bert
 
 run-name: ${{ github.actor }} is pushing Bert images to Docker.
 
-on: [push]
+on:
+  push:
+    branches: [main]
 
 jobs:
   build_docker_image_address_bert_de:

@@ -22,7 +22,7 @@ class FileHelper:
         """
         try:
             return os.path.isfile(fpath) and os.path.getsize(fpath) > 0
-        except:
+        except OSError:
             return False
 
     @staticmethod
@@ -111,7 +111,7 @@ class FileHelper:
             if 'entities' in entry:
                 counter = 1
                 for list_or_object in entry['entities']:
-                    if type(list_or_object) == str:
+                    if isinstance(list_or_object, str):
                         new_entry = self.add_to_json_if_exists(new_entry, entry['entities'], list_or_object, 'expected_', '') 
                     else:
                         for expected_entity in list_or_object:

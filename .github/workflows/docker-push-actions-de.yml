@@ -2,7 +2,9 @@ name: GitHub Actions Docker Push GER
 
 run-name: ${{ github.actor }} is pushing German images to Docker.
 
-on: [push]
+on:
+  push:
+    branches: [main]
 
 jobs:
   build_docker_image_address_nobase_de:
