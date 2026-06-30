@@ -12,7 +12,7 @@ jobs:
     name: Push image using an German address model (Bert)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
     - name: Clone new model from huggingface
@@ -29,7 +29,7 @@ jobs:
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -51,7 +51,7 @@ jobs:
     name: Push image using an English address model (Bert)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
     - name: Clone new model from huggingface
@@ -68,7 +68,7 @@ jobs:
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -90,7 +90,7 @@ jobs:
     name: Push image using an German name model (Bert)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
     - name: Clone new model from huggingface
@@ -107,7 +107,7 @@ jobs:
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -129,7 +129,7 @@ jobs:
     name: Push image using an English name model (Bert)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Delete current model
       run: rm -r ./AutomationService/AutomationServiceBackend/data/model/*
     - name: Clone new model from huggingface
@@ -146,7 +146,7 @@ jobs:
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}

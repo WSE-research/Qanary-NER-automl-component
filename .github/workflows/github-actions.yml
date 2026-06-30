@@ -16,7 +16,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install asciidoc pandoc 
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
@@ -35,7 +35,7 @@ jobs:
           sed -i '1i# Automation Service \n' README.md 
           mv README.md AutomationService
       - name: Upload generated Readme for job 1 generate_readme
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: readme
           path: AutomationService/README.md
@@ -45,9 +45,9 @@ jobs:
     needs: generate_readme
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Download readme result from job 1 generate_readme
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           name: readme
       - name: move README to correct position

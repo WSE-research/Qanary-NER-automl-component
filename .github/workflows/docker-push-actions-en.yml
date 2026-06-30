@@ -12,13 +12,13 @@ jobs:
     name: Push image using an English address model (no base)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Move address model
       run: rsync -a ./AutomationService/ExampleBodies/ExampleModels/address_nobase_en/* ./AutomationService/AutomationServiceBackend/data/model/
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -40,13 +40,13 @@ jobs:
     name: Push image using an English address model (spacy)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Move address model
       run: rsync -a ./AutomationService/ExampleBodies/ExampleModels/address_spacy_en/* ./AutomationService/AutomationServiceBackend/data/model/
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -68,13 +68,13 @@ jobs:
     name: Push image using an English name model (no base)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Move name model
       run: rsync -a ./AutomationService/ExampleBodies/ExampleModels/name_nobase_en/* ./AutomationService/AutomationServiceBackend/data/model/
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -96,13 +96,13 @@ jobs:
     name: Push image using an English name model (spacy)
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Move name model
       run: rsync -a ./AutomationService/ExampleBodies/ExampleModels/name_spacy_en/* ./AutomationService/AutomationServiceBackend/data/model/
     - name: Build the Docker image
       run: docker compose -f AutomationService/docker-compose_full-qanary-example-HTWK-stardog.yml build automation_component
     - name: Docker Login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
