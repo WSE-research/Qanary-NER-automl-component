@@ -30,7 +30,7 @@ pyparsing==3.0.9
 PyYAML==6.0
 regex==2022.8.17
 requests==2.28.1
-smart-open==5.2.1
+smart-open==8.0.0
 spacy==3.4.1
 spacy-alignments==0.8.5
 spacy-legacy==3.0.10
