@@ -1,0 +1,25 @@
+# Grouped, weekly dependency updates. Minor+patch batched per ecosystem; majors
+# arrive individually (they need a human + the CI gate).
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/AutomationService/AutomationServiceBackend"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      python-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: docker
+    directory: "/AutomationService/AutomationServiceBackend/MLFlow"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]

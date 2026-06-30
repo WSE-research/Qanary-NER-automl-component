@@ -1,0 +1,69 @@
+# CI for Qanary-NER-automl-component.
+# The full runtime stack (spaCy, transformers, torch, cupy-cuda*) is GPU-heavy
+# and not installable on a CPU runner, so this gate installs only the
+# dependency-light helper deps and tests the importable helper logic. It runs
+# on every PR/push, alongside lint and an e2e helper smoke.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["*"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install ruff
+      - run: |
+          ruff check \
+            AutomationService/AutomationServiceBackend/app/helper/filehelper.py \
+            AutomationService/AutomationServiceBackend/app/helper/my_exceptions.py \
+            tests/ conftest.py
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install lightweight test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Unit tests with coverage gate (dependency-light helpers)
+        run: |
+          pytest tests/unit \
+            --cov=helper.filehelper --cov=helper.my_exceptions \
+            --cov-report=term-missing --cov-report=xml \
+            --cov-fail-under=75 --junitxml=pytest-report.xml
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install lightweight test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Helper-layer end-to-end smoke
+        run: pytest tests/e2e -m e2e -v

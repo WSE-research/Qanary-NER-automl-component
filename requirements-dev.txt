@@ -1,0 +1,10 @@
+# Lightweight CI/test dependencies for the importable helper logic. The full
+# runtime stack (spaCy, transformers, torch, ...) lives in
+# AutomationService/AutomationServiceBackend/requirements.txt and is not needed
+# to test the dependency-light helpers covered here.
+pandas
+fastapi
+python-dotenv
+pytest==9.1.1
+pytest-cov==7.1.0
+ruff==0.15.20
