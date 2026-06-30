@@ -2,7 +2,9 @@ name: GitHub Actions Asciidoc Transfer
 
 run-name: ${{ github.actor }} is generating a README in Markdown.
 
-on: [push]
+on:
+  push:
+    branches: [main]
 
 jobs:
 
