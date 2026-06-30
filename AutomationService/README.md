@@ -10,8 +10,7 @@ of the service can be accessed at <http://demos.swe.htwk-leipzig.de>.
 The service can be run as standalone or within a [Qanary-driven Question
 Answering system](https://github.com/WDAqua/Qanary).
 
-Starting Conditions
-===================
+# Starting Conditions
 
 There are two options (requirements) for starting the service:
 
@@ -20,8 +19,7 @@ There are two options (requirements) for starting the service:
 -   option 2: there must be either compatible datasets for training and
     testing.
 
-Option 1
---------
+## Option 1
 
 If a pre-trained model is intended to be provided, it must be available
 in the folder
@@ -32,8 +30,7 @@ spaCy standards (or should be trained using spaCy). In a netconsole,
 just copy the contents of a trained model (usually in the folder
 `model-best` or `model-last`) into the mentioned folder.
 
-Option 2
---------
+## Option 2
 
 If no pre-trained model is provided, training and testing data must be
 provided to the system. Otherwise, the web service will not start. Both
@@ -66,36 +63,39 @@ like this:
 </colgroup>
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>First_Name</th>
-<th>Middle_Name</th>
-<th>Last_Name</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">First_Name</th>
+<th style="text-align: left;">Middle_Name</th>
+<th style="text-align: left;">Last_Name</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>I am Ms Walters</p></td>
-<td></td>
-<td></td>
-<td><p>Walters</p></td>
+<td style="text-align: left;"><p>I am Ms Walters</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Walters</p></td>
 </tr>
 <tr class="even">
-<td><p>Do you think Silke will come?</p></td>
-<td><p>Silke</p></td>
-<td></td>
-<td><p>startquestionansweringwithtextquestion</p></td>
+<td style="text-align: left;"><p>Do you think Silke will come?</p></td>
+<td style="text-align: left;"><p>Silke</p></td>
+<td style="text-align: left;"></td>
+<td
+style="text-align: left;"><p>startquestionansweringwithtextquestion</p></td>
 </tr>
 <tr class="odd">
-<td><p>I do have a middlename, it’s Heinz-Wilhelm</p></td>
-<td></td>
-<td><p>Heinz-Wilhelm</p></td>
-<td></td>
+<td style="text-align: left;"><p>I do have a middlename, it’s
+Heinz-Wilhelm</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Heinz-Wilhelm</p></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td><p>You can send the data to Ingetraut Renz</p></td>
-<td><p>Ingetraut</p></td>
-<td></td>
-<td><p>Renz</p></td>
+<td style="text-align: left;"><p>You can send the data to Ingetraut
+Renz</p></td>
+<td style="text-align: left;"><p>Ingetraut</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Renz</p></td>
 </tr>
 </tbody>
 </table>
@@ -112,8 +112,7 @@ There are two example environments files given for initial training with
 [name](./.env.template-name-training) or
 [address](./.env.template-address-training) data.
 
-Starting the Service
-====================
+# Starting the Service
 
 To start the service, docker-compose files are provided. Therefore, you
 need to have docker and docker-compose installed. Additionally, if you
@@ -122,8 +121,7 @@ requirements based on your drivers / hardware, if not you need to remove
 the lines from the docker-compose. Refer to the documentation needed for
 these. Nothing else is needed.
 
-Starting as a standalone Service
---------------------------------
+## Starting as a standalone Service
 
 If you want to run the service as a standalone, in the root directory
 build the images. Please note that if the service runs as a standalone,
@@ -139,8 +137,7 @@ You can then run the service via:
 Add `-d` to the call to have it run in the background and not be bound
 by the running console.
 
-Starting a Qanary Environment
------------------------------
+## Starting a Qanary Environment
 
 ### Starting a complete Qanary environment
 
@@ -219,8 +216,7 @@ following steps must be taken:
     Logger values are only relevant for the complete system and do not
     need to be paid attention to for the standalone component
 
-Possible errors
----------------
+## Possible errors
 
 ### `Additional properties are not allowed ('devices' was unexpected)`
 
@@ -258,16 +254,14 @@ For Ubuntu and Debain you can run:
 
     sudo apt-get install docker-compose-plugin
 
-Interaction with the Service
-============================
+# Interaction with the Service
 
 Once a Qanary service is started, you may interact with it through a
 handful of endpoints offered as APIs that will either provide access to
 some way of information extraction from the given data or enable you to
 retrain (i.e., exchange) the model on runtime.
 
-Qanary endpoint
----------------
+## Qanary endpoint
 
 To interact with the Qanary interface, you can access it using the
 following webpage:
@@ -347,16 +341,18 @@ following, will return the NER parts of the annotation:
 
 The result then looks like this:
 
-![Example
-Result](https://user-images.githubusercontent.com/59013332/197013196-6cce4c8b-07d9-4426-aaa7-53fe753905c6.png)
+<figure>
+<img
+src="https://user-images.githubusercontent.com/59013332/197013196-6cce4c8b-07d9-4426-aaa7-53fe753905c6.png"
+alt="Example Result" />
+</figure>
 
 Alternatively, you can curl against the pipeline directly using a curl
 command such as:
 
     curl --location --request POST 'http://demos.swe.htwk-leipzig.de:40170/questionanswering?textquestion=Who is Barack Obama?&language=en&componentlist%5B%5D=AutomationServiceComponent'
 
-NER Endpoint
-------------
+## NER Endpoint
 
 ### /api
 
@@ -440,42 +436,47 @@ As an example, if you want to upload a file such as:
 </colgroup>
 <thead>
 <tr class="header">
-<th>Text</th>
-<th>First_Name</th>
-<th>Middle_Name</th>
-<th>Last_Name</th>
+<th style="text-align: left;">Text</th>
+<th style="text-align: left;">First_Name</th>
+<th style="text-align: left;">Middle_Name</th>
+<th style="text-align: left;">Last_Name</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>People call me Ida Clayton Henderson</p></td>
-<td><p>Ida</p></td>
-<td><p>Clayton</p></td>
-<td><p>Henderson</p></td>
+<td style="text-align: left;"><p>People call me Ida Clayton
+Henderson</p></td>
+<td style="text-align: left;"><p>Ida</p></td>
+<td style="text-align: left;"><p>Clayton</p></td>
+<td style="text-align: left;"><p>Henderson</p></td>
 </tr>
 <tr class="even">
-<td><p>I am happy to meet you, too. You can call me Kira.</p></td>
-<td><p>Kira</p></td>
-<td></td>
-<td></td>
+<td style="text-align: left;"><p>I am happy to meet you, too. You can
+call me Kira.</p></td>
+<td style="text-align: left;"><p>Kira</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr class="odd">
-<td><p>You can send the data to Eberhard Rump</p></td>
-<td><p>Eberhard</p></td>
-<td></td>
-<td><p>Rump</p></td>
+<td style="text-align: left;"><p>You can send the data to Eberhard
+Rump</p></td>
+<td style="text-align: left;"><p>Eberhard</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Rump</p></td>
 </tr>
 <tr class="even">
-<td><p>Please send all business inquiries to Jessie Edwin Fowler</p></td>
-<td><p>Jessie</p></td>
-<td><p>Edwin</p></td>
-<td><p>Fowler</p></td>
+<td style="text-align: left;"><p>Please send all business inquiries to
+Jessie Edwin Fowler</p></td>
+<td style="text-align: left;"><p>Jessie</p></td>
+<td style="text-align: left;"><p>Edwin</p></td>
+<td style="text-align: left;"><p>Fowler</p></td>
 </tr>
 <tr class="odd">
-<td><p>Oh, I actually go by Lioba Alexandra.</p></td>
-<td><p>Lioba</p></td>
-<td><p>Alexandra</p></td>
-<td></td>
+<td style="text-align: left;"><p>Oh, I actually go by Lioba
+Alexandra.</p></td>
+<td style="text-align: left;"><p>Lioba</p></td>
+<td style="text-align: left;"><p>Alexandra</p></td>
+<td style="text-align: left;"></td>
 </tr>
 </tbody>
 </table>
@@ -483,7 +484,7 @@ As an example, if you want to upload a file such as:
 with `text/csv` as an "accept"-header, it would result in something
 like:
 
-<table style="width:100%;">
+<table>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 11%" />
@@ -495,60 +496,65 @@ like:
 </colgroup>
 <thead>
 <tr class="header">
-<th>Text</th>
-<th>First_Name</th>
-<th>Middle_Name</th>
-<th>Last_Name</th>
-<th>FIRST_NAME</th>
-<th>LAST_NAME</th>
-<th>MIDDLE_NAME</th>
+<th style="text-align: left;">Text</th>
+<th style="text-align: left;">First_Name</th>
+<th style="text-align: left;">Middle_Name</th>
+<th style="text-align: left;">Last_Name</th>
+<th style="text-align: left;">FIRST_NAME</th>
+<th style="text-align: left;">LAST_NAME</th>
+<th style="text-align: left;">MIDDLE_NAME</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>People call me Ida Clayton Henderson</p></td>
-<td><p>Ida</p></td>
-<td><p>Clayton</p></td>
-<td><p>Henderson</p></td>
-<td><p>Ida</p></td>
-<td><p>Henderson</p></td>
-<td><p>Clayton</p></td>
+<td style="text-align: left;"><p>People call me Ida Clayton
+Henderson</p></td>
+<td style="text-align: left;"><p>Ida</p></td>
+<td style="text-align: left;"><p>Clayton</p></td>
+<td style="text-align: left;"><p>Henderson</p></td>
+<td style="text-align: left;"><p>Ida</p></td>
+<td style="text-align: left;"><p>Henderson</p></td>
+<td style="text-align: left;"><p>Clayton</p></td>
 </tr>
 <tr class="even">
-<td><p>I am happy to meet you, too. You can call me Kira.</p></td>
-<td><p>Kira</p></td>
-<td></td>
-<td></td>
-<td><p>Kira</p></td>
-<td></td>
-<td></td>
+<td style="text-align: left;"><p>I am happy to meet you, too. You can
+call me Kira.</p></td>
+<td style="text-align: left;"><p>Kira</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Kira</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr class="odd">
-<td><p>You can send the data to Eberhard Rump</p></td>
-<td><p>Eberhard</p></td>
-<td></td>
-<td><p>Rump</p></td>
-<td><p>Eberhard</p></td>
-<td><p>Rump</p></td>
-<td></td>
+<td style="text-align: left;"><p>You can send the data to Eberhard
+Rump</p></td>
+<td style="text-align: left;"><p>Eberhard</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Rump</p></td>
+<td style="text-align: left;"><p>Eberhard</p></td>
+<td style="text-align: left;"><p>Rump</p></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td><p>Please send all business inquiries to Jessie Edwin Fowler</p></td>
-<td><p>Jessie</p></td>
-<td><p>Edwin</p></td>
-<td><p>Fowler</p></td>
-<td><p>Jessie</p></td>
-<td><p>Fowler</p></td>
-<td><p>Edwin</p></td>
+<td style="text-align: left;"><p>Please send all business inquiries to
+Jessie Edwin Fowler</p></td>
+<td style="text-align: left;"><p>Jessie</p></td>
+<td style="text-align: left;"><p>Edwin</p></td>
+<td style="text-align: left;"><p>Fowler</p></td>
+<td style="text-align: left;"><p>Jessie</p></td>
+<td style="text-align: left;"><p>Fowler</p></td>
+<td style="text-align: left;"><p>Edwin</p></td>
 </tr>
 <tr class="odd">
-<td><p>Oh, I actually go by Lioba Alexandra.</p></td>
-<td><p>Lioba</p></td>
-<td><p>Alexandra</p></td>
-<td></td>
-<td><p>Lioba</p></td>
-<td></td>
-<td><p>Alexandra</p></td>
+<td style="text-align: left;"><p>Oh, I actually go by Lioba
+Alexandra.</p></td>
+<td style="text-align: left;"><p>Lioba</p></td>
+<td style="text-align: left;"><p>Alexandra</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Lioba</p></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><p>Alexandra</p></td>
 </tr>
 </tbody>
 </table>
@@ -676,22 +682,22 @@ be:
 </colgroup>
 <thead>
 <tr class="header">
-<th>text</th>
-<th>language</th>
-<th>entities_First_Name</th>
-<th>entities_Last_Name</th>
-<th>results_FIRST_NAME</th>
-<th>results_LAST_NAME</th>
+<th style="text-align: left;">text</th>
+<th style="text-align: left;">language</th>
+<th style="text-align: left;">entities_First_Name</th>
+<th style="text-align: left;">entities_Last_Name</th>
+<th style="text-align: left;">results_FIRST_NAME</th>
+<th style="text-align: left;">results_LAST_NAME</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>I am called Marilyn Monroe.</p></td>
-<td><p>en</p></td>
-<td><p>Marilyn</p></td>
-<td><p>Monroe</p></td>
-<td><p>Marilyn</p></td>
-<td><p>Monroe</p></td>
+<td style="text-align: left;"><p>I am called Marilyn Monroe.</p></td>
+<td style="text-align: left;"><p>en</p></td>
+<td style="text-align: left;"><p>Marilyn</p></td>
+<td style="text-align: left;"><p>Monroe</p></td>
+<td style="text-align: left;"><p>Marilyn</p></td>
+<td style="text-align: left;"><p>Monroe</p></td>
 </tr>
 </tbody>
 </table>
@@ -726,8 +732,7 @@ Or an example of a `curl` with content:
 
 Alternatively, the `accept`-header can be set to CSV, too.
 
-Retrain Endpoint
-----------------
+## Retrain Endpoint
 
 The retraining endpoint uses the data you provided to train a new NER
 model which will if all is successful, replace the original model. All
@@ -911,8 +916,7 @@ and a working example is:
 To check if the service is active, just run:
 <http://demos.swe.htwk-leipzig.de40170/health>
 
-ML Flow Logging
----------------
+## ML Flow Logging
 
 You can use ML Flow Logging with this service. For information on the
 setup and usage of an ML Flow Server, please refer to its
@@ -1010,8 +1014,7 @@ requirement. The logged data is:
 Please note that the process of logging NER uploads can take up some
 time if bigger datasets are provided.
 
-Ready to go Docker Images
-=========================
+# Ready to go Docker Images
 
 There are Docker images available that have pre-trained models for name
 and address recognition - one using a spacy model as a base and one
