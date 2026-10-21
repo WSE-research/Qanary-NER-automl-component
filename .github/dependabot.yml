@@ -10,6 +10,17 @@ updates:
     groups:
       python-minor-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # torch 2.11+ wheels use CUDA 13; the images (nvidia/cuda 12.8) and
+      # cupy-cuda12x are on CUDA 12, see requirements.txt.
+      - dependency-name: "torch"
+        versions: [">=2.11"]
+      # spacy-transformers 1.4 requires transformers < 4.53.3, which in turn
+      # needs tokenizers 0.21.x.
+      - dependency-name: "transformers"
+        versions: [">=4.53.3"]
+      - dependency-name: "tokenizers"
+        versions: [">=0.22"]
 
   - package-ecosystem: docker
     directory: "/AutomationService/AutomationServiceBackend/MLFlow"

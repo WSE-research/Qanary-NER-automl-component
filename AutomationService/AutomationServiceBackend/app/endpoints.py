@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 from starlette.requests import Request
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from copy import deepcopy
 from dotenv import load_dotenv
 import logging
@@ -30,25 +30,24 @@ use_mlflow = os.getenv('MLFLOW_ACTIVATED')
 
 class Input(BaseModel):
     text: str = Field(
-        title="A text that should be identified.", example="I am called Marilyn Monroe."
+        title="A text that should be identified.", examples=["I am called Marilyn Monroe."]
     )
-    language: str = Field(
-        default=None, title="A language string.", max_length=2, example="en"
+    language: Optional[str] = Field(
+        default=None, title="A language string.", max_length=2, examples=["en"]
     )
-    entities: Dict[str, str] = Field(
+    entities: Optional[Dict[str, str]] = Field(
         default=None, title="A dictionary of included entities and their labels.",
-        example={"First_Name": "Marilyn", "Last_Name": "Monroe"}
+        examples=[{"First_Name": "Marilyn", "Last_Name": "Monroe"}]
     )
 
 
 class Output(Input):
-    results: Dict[str, str] = Field(
+    results: Optional[Dict[str, str]] = Field(
         default=None, title="A dictionary of recognized entities and their labels.",
-        example={"FIRST_NAME": "Marilyn", "LAST_NAME": "Monroe"}
+        examples=[{"FIRST_NAME": "Marilyn", "LAST_NAME": "Monroe"}]
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Retraindata(BaseModel):
@@ -61,20 +60,20 @@ class Retraindata(BaseModel):
     entities: List[str] = Field(
         title="A list of all entity-labels that the NER model should learn. "
                 + "All entities mentioned within the document must be listed here.",
-        example=["First_Name", "Middle_Name", "Last_Name"]
+        examples=[["First_Name", "Middle_Name", "Last_Name"]]
     )
     language: str = Field(
-        title="The language the new NER model should be based on. ", example="en"
+        title="The language the new NER model should be based on. ", examples=["en"]
     )
     modeltype: str = Field(
         title="The base model the new NER model should trained on (currently supporting: 'bert', 'spacy'). ",
-        example="en"
+        examples=["en"]
     )
 
 
 class SuccessMessage(BaseModel):
     message: str = Field(
-        title="A success message.", example="Successfully updated the spacy model based on your uploaded csv data."
+        title="A success message.", examples=["Successfully updated the spacy model based on your uploaded csv data."]
     )
 
 
