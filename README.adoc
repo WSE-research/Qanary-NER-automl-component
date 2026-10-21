@@ -95,8 +95,10 @@ There are two example environments files given for initial training with link:./
 To start the service, docker-compose files are provided. 
 Therefore, you need to have docker and docker-compose installed. 
 Additionally, if you want to use a GPU to train the models, you might need additional requirements based on your drivers / hardware, if not you need to remove the lines from the docker-compose. 
-Refer to the documentation needed for these. 
-Nothing else is needed. 
+Refer to the documentation needed for these.
+Nothing else is needed.
+
+The images run Python 3.12 on `nvidia/cuda:12.8.1-devel-ubuntu24.04` (torch 2.10 and `cupy-cuda12x`, both CUDA 12), so GPU training needs an NVIDIA driver that supports CUDA 12.8 (R570 or newer).
 
 === Starting as a standalone Service
 
