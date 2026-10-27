@@ -7,7 +7,7 @@ python-dotenv==0.20.0
 python-multipart==0.0.32
 blis==0.7.8
 catalogue==2.0.10
-certifi==2022.6.15
+certifi==2026.10.23
 charset-normalizer==2.1.1
 click==8.4.2
 cupy-cuda117==10.6.0
