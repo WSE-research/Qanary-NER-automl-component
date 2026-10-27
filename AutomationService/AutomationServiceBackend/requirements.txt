@@ -28,7 +28,7 @@ preshed==3.0.13
 pydantic==1.9.2
 pyparsing==3.3.3
 PyYAML==6.0.3
-regex==2022.8.17
+regex==2026.9.29
 requests==2.34.2
 smart-open==5.2.1
 spacy==3.8.16
